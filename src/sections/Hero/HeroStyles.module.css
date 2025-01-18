@@ -8,13 +8,14 @@
     min-height: 500px;
 
     .hero {
-        width: 350px; /* Fixed width */
-        height: 370px; /* Fixed height */
+        width: 250px; /* Fixed width */
+        height: 260px; /* Fixed height */
         border-radius: 50%; /* Makes it circular */
         overflow: hidden; /* Ensures content doesn't spill out */
         display: block; /* Useful if it's an inline element like an <img> */
         box-shadow: 0 0 70px rgba(0, 0, 0, 0.896), 0 0 70px rgba(0, 0, 0, 0.896), 0 0 60px rgba(0, 0, 0, 0.896); /* Glow effect */
-        margin-left: 100px;
+        margin-left: 70px;
+        margin-bottom: -40px;
     }
     span{
         display: flex;
@@ -86,8 +87,10 @@
         justify-content: space-evenly;
 
         .hero{
-           max-width: 350px;
-           width: 350px;
+           max-width: 450px;
+           width: 300px;
+           margin-left: -60px;
+           margin-bottom: 220px;
         }
     }
 }
@@ -95,8 +98,10 @@
 @media (width >=1400px){
     .container{
         .hero{
-           max-width: 400px;
-           width: 400px;
+           max-width: 600px;
+           width: 300px;
+           margin-left: -60px;
+           margin-bottom: 220px;
         }
     }
 }
