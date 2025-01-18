@@ -53,7 +53,7 @@ function Hero() {
             <p className={styles.description}>
                 A CIS graduate with a passion for backnd development and has a knowledge of AWS, MLA and Fullstack
             </p>
-            <a href={CV} download>
+            <a href={CV} download className='post'>
                    <button className='hover'>
                     Resume
                    </button>

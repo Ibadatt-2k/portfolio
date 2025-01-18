@@ -15,10 +15,10 @@
         display: block; /* Useful if it's an inline element like an <img> */
         box-shadow: 0 0 70px rgba(0, 0, 0, 0.896), 0 0 70px rgba(0, 0, 0, 0.896), 0 0 60px rgba(0, 0, 0, 0.896); /* Glow effect */
         margin-left: 70px;
-        margin-bottom: 60px;
+        margin-bottom: 10px;
     }
     .info{
-            margin-bottom: -280px;
+            margin-bottom: -100px;
         }
     span{
         display: flex;
