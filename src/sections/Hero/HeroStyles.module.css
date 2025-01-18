@@ -15,8 +15,11 @@
         display: block; /* Useful if it's an inline element like an <img> */
         box-shadow: 0 0 70px rgba(0, 0, 0, 0.896), 0 0 70px rgba(0, 0, 0, 0.896), 0 0 60px rgba(0, 0, 0, 0.896); /* Glow effect */
         margin-left: 70px;
-        margin-bottom: -40px;
+        margin-bottom: 60px;
     }
+    .info{
+            margin-bottom: -280px;
+        }
     span{
         display: flex;
         gap: 25px;
@@ -90,7 +93,10 @@
            max-width: 450px;
            width: 300px;
            margin-left: -60px;
-           margin-bottom: 220px;
+           margin-bottom: 140px;
+        }
+        .info{
+            margin-bottom: -80px;
         }
     }
 }
@@ -102,6 +108,9 @@
            width: 300px;
            margin-left: -60px;
            margin-bottom: 220px;
+        }
+        .info{
+            margin-bottom: -80px;
         }
     }
 }
