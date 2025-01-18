@@ -44,7 +44,7 @@ function addStar(){
 }
 Array (200).fill().forEach(addStar)
 
-const euphoraTexture = new THREE.TextureLoader().load('./euphora.jpg');
+const euphoraTexture = new THREE.TextureLoader().load('./src/assets/euphora.jpg');
 const euphora = new THREE.Mesh(
     new THREE.SphereGeometry(6, 66, 66),
     new THREE.MeshStandardMaterial({
