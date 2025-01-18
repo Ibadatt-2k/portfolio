@@ -8,13 +8,23 @@
     min-height: 500px;
 
     .hero {
+<<<<<<< Updated upstream
         max-width: 400px;
         width: 100%; /* Ensure it scales properly */
         height: auto; /* Maintain aspect ratio */
+=======
+        width: 300px; /* Fixed width */
+        height: 270px; /* Fixed height */
+>>>>>>> Stashed changes
         border-radius: 50%; /* Makes it circular */
         overflow: hidden; /* Ensures content doesn't spill out */
         display: block; /* Useful if it's an inline element like an <img> */
         box-shadow: 0 0 70px rgba(0, 0, 0, 0.896), 0 0 70px rgba(0, 0, 0, 0.896), 0 0 60px rgba(0, 0, 0, 0.896); /* Glow effect */
+<<<<<<< Updated upstream
+=======
+        margin-left: 30px;
+        margin-bottom: -240px;
+>>>>>>> Stashed changes
     }
     span{
         display: flex;
@@ -87,7 +97,9 @@
 
         .hero{
            max-width: 350px;
-           width: 350px;
+           width: 280px;
+           margin-left: 150px;
+           margin-bottom: 240px;
         }
     }
 }
@@ -96,7 +108,9 @@
     .container{
         .hero{
            max-width: 400px;
-           width: 400px;
+           width: 300px;
+           margin-left: 150px;
+           margin-bottom: 240px;
         }
     }
 }
