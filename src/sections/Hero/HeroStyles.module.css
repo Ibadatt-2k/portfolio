@@ -8,7 +8,7 @@
     min-height: 500px;
 
     .hero {
-        width: 250px; /* Fixed width */
+        width: 230px; /* Fixed width */
         height: 260px; /* Fixed height */
         border-radius: 50%; /* Makes it circular */
         overflow: hidden; /* Ensures content doesn't spill out */
@@ -90,7 +90,7 @@
         justify-content: space-evenly;
 
         .hero{
-           max-width: 450px;
+           max-width: 350px;
            width: 400px;
            height: 400px;
            margin-left: -60px;
@@ -105,7 +105,7 @@
 @media (width >=1400px){
     .container{
         .hero{
-           max-width: 600px;
+           max-width: 340px;
            width: 400px;
            height: 400px;
            margin-left: -60px;
