@@ -1,37 +1,266 @@
-.container{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+/* Completely redesigned with modern card layout, animations, and dual buttons */
 
-    img {
-        max-width: 250px;
-        align-self: center;
-        background-color: var(--project-card-bg);
-        border-radius: 20px;
-    }
-    a{
-        width: fit-content;
-        text-decoration: none;
-        color: 222;
-        transition: transform 200ms ease-in-out;
-    }
-
-    a:hover{
-        transform: scale(1.05);
-    }
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
+
+.header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
 .projectsContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
 }
 
-@media (width >=800px){
-    .projectsContainer {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
-        padding: 0 30px;
-    }
+.projectCard {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+  border: 1px solid #4b5563;
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  /* Add slide-in animation to cards */
+  /* increased animation duration from 0.6s to 1.2s and changed timing for smoother descent */
+  animation: slideIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.projectCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+  transition: left 0.5s ease;
+}
+
+.projectCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
+}
+
+.projectCard:hover::before {
+  left: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--accent-color) 15%, var(--accent-color) 5%);
+  border-radius: 12px;
+  animation: float 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Add slide-in animation for project cards */
+/* increased slide-in animation duration and adjusted timing for slower, smoother entrance */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Add slide-out animation for project cards */
+/* increased slide-out animation duration and adjusted timing for slower, smoother exit */
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+}
+
+.title {
+  font-size: 1.275rem;
+  font-weight: 700;
+  margin: 8;
+  color: rgb(0, 0, 0);
+  letter-spacing: -0.5px;
+}
+
+.description {
+  line-height: 1.7;
+  color: #000000;
+  margin: 0;
+  flex-grow: 1;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+  flex-wrap: nowrap;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-width: 110px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+
+
+.button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: -1;
+}
+
+.button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+  display: inline-block;
+  font-size: 1.1rem;
+}
+
+.button:hover .arrow {
+  transform: translateX(4px);
+}
+
+.primary {
+  background:#1f2937;
+  color: rgb(0, 0, 0);
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.15);
+}
+
+.primary:hover {
+  box-shadow: 0 8px 25px rgba(var(--accent-color-rgb), 0.4);
+  transform: translateY(-2px);
+}
+
+.secondary {
+  background: #d1d5db;
+  color: #1f2937;
+  border: 2px solid #9ca3af;
+}
+
+.secondary:hover {
+  background: #e5e7eb;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    gap: 2rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .projectsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .projectCard {
+    padding: 1.5rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+
+  .button {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.85rem;
+  }
 }

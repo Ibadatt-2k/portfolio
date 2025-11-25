@@ -1,49 +1,112 @@
-import styles from './ContactStyles.module.css';
+"use client"
 
-function Contact() {
+import { useState } from "react"
+import styles from "./ContactStyles.module.css"
+
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState("")
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      // You can integrate with an email service here
+      console.log("Form submitted:", formData)
+      setSubmitStatus("success")
+      setFormData({ name: "", email: "", message: "" })
+      setTimeout(() => setSubmitStatus(""), 3000)
+    } catch (error) {
+      setSubmitStatus("error")
+      setTimeout(() => setSubmitStatus(""), 3000)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
-    <section id="contact" className={styles.container}>
-        <h1 className="sectionTitle">Contact</h1>
-        <form action="https://formspree.io/f/xeoonkeb" method="post">
-            <div className='formGroup'>
-                <label htmlFor="name" hidden>
-                    Name
-                </label>
-                <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Name"
-                required
-                />
-            </div>
-            <div className='formGroup'>
-                <label htmlFor="email" hidden>
-                    Email
-                </label>
-                <input
-                    type="text"
-                    name="email" id="email"
-                    placeholder="Email"
-                    required
-                />
-            </div>
-            <div className='formGroup'>
-                <label htmlFor="message" hidden>
-                    Message
-                </label>
-                <textarea
-                    type="text"
-                    name="message" id="message"
-                    placeholder="Message"
-                    required
-                >
-                </textarea>
-            </div>
-            <input className="hover btn" type="submit"  value="Submit"/>
+    <section className={styles.contactSection}>
+      <div className={styles.contactContainer}>
+        <h2 className={styles.title}>Get In Touch</h2>
+        <p className={styles.subtitle}>Send me a message and I'll get back to you as soon as possible</p>
+
+        <form action="https://formspree.io/f/xeoonkeb" method="post" className={styles.formBox}>
+          {/* Name Input */}
+          <div className={styles.formGroup}>
+            <label htmlFor="name" className={styles.label}>
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your Name"
+              required
+              className={styles.input}
+            />
+          </div>
+
+          {/* Email Input */}
+          <div className={styles.formGroup}>
+            <label htmlFor="email" className={styles.label}>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="your.email@example.com"
+              required
+              className={styles.input}
+            />
+          </div>
+
+          {/* Message Input */}
+          <div className={styles.formGroup}>
+            <label htmlFor="message" className={styles.label}>
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder="Your message here..."
+              required
+              rows="6"
+              className={styles.textarea}
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
+            {isSubmitting ? "Sending..." : "Send Message"}
+          </button>
+
+          {/* Status Message */}
+          {submitStatus === "success" && <p className={styles.successMessage}>Message sent successfully!</p>}
+          {submitStatus === "error" && <p className={styles.errorMessage}>Failed to send message. Please try again.</p>}
         </form>
+      </div>
     </section>
   )
 }
-
-export default Contact

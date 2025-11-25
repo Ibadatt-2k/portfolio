@@ -244,8 +244,8 @@ function animate() {
   //})
 
   // Update sun light position
-  //sunLight.position.copy(sun.position)
-  sun.position.set(-95, 40, -90)
+  sunLight.position.copy(sun.position)
+  sun.position.set(-45, 40, -90)
   sunGlowLayers.forEach((layer, i) => {
     layer.position.copy(sun.position)
   })
@@ -256,7 +256,7 @@ function animate() {
   const radius = 30
   camera.position.x = Math.sin(scrollProgress) * radius
   camera.position.z = Math.cos(scrollProgress) * radius
-  camera.position.y = scrollProgress * 5
+  camera.position.x = scrollProgress * 90
   camera.lookAt(0, 0, 0)
 
   // Rotate space dust slowly
