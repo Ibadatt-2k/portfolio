@@ -13,7 +13,8 @@
         border-radius: 50%; /* Makes it circular */
         overflow: hidden; /* Ensures content doesn't spill out */
         display: block; /* Useful if it's an inline element like an <img> */
-        box-shadow: 0 0 70px rgba(0, 0, 0, 0.896), 0 0 70px rgba(0, 0, 0, 0.896), 0 0 60px rgba(0, 0, 0, 0.896); /* Glow effect */
+        border: 5px solid #000; /* Black ring, adjust thickness */
+        box-sizing: border-box; /* Ensures border doesn't affect layout */
         margin-left: 70px;
         margin-bottom: 10px;
     }

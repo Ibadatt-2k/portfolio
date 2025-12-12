@@ -51,7 +51,7 @@ function Hero() {
               </a>
             </span>
             <p className={styles.description}>
-                A CIS graduate with a passion for backnd development and has a knowledge of AWS, MLA and Fullstack
+                Bachelor of Computer Information Systems graduate with hands-on experience in Python software development, working as a Junior Software Engineer in a reputed firm. Strong foundation in backend programming, databases, and API development, with a passion for building scalable software solutions.
             </p>
             <a href={CV} download className='post'>
                    <button className='hover'>

@@ -31,6 +31,7 @@ body {
     display: flex;
     justify-content: center;
     margin: 0 auto 60px;
+    overflow-x: hidden;
 }
 
 #root {

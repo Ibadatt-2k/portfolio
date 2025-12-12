@@ -9,9 +9,20 @@
 
 .contactContainer {
   width: 100%;
-  max-width: 600px;
+  max-width: 300px;
   animation: slideInUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
+@media (width >=800px){
+  .contactContainer{
+    max-width: 600px;
+  }
+}
+
+@media (width >=1400px){
+
+}
+
 
 .title {
   font-size: 3rem;
@@ -32,7 +43,7 @@
 
 .formBox {
   background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 40px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);

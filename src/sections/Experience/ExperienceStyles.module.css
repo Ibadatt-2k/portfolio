@@ -15,7 +15,7 @@
 .experienceCard {
   background: linear-gradient(135deg, #9ca3af, #6b7280);
   border: 2px solid #4b5563;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 30px;
   display: flex;
   gap: 25px;
