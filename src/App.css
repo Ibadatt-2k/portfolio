@@ -24,14 +24,21 @@
 
 }
 
+.app {
+  max-width: 1200px;   /* or whatever width you want */
+  margin: 0 auto;     /* centers horizontally */
+  padding: 0 1rem;
+}
 
 
 body {
+    height: 100%; /* ensures body fills the viewport */
     background-color: var(--background-color);
     display: flex;
     justify-content: center;
     margin: 0 auto 60px;
     overflow-x: hidden;
+    align-items:center;
 }
 
 #root {
