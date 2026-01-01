@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import styles from "./ContactStyles.module.css"
+import { useScrollAnimation } from "../../hooks/useScrollAnimation"
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -39,10 +40,12 @@ export default function Contact() {
     }
   }
 
+  const { ref: containerRef, isVisible: containerVisible } = useScrollAnimation({ threshold: 0.2 });
+
   return (
     <section className={styles.contactSection}>
-      <div className={styles.contactContainer}>
-        <h2 className={styles.title}>Get In Touch</h2>
+      <div ref={containerRef} className={`${styles.contactContainer} scroll-rotate ${containerVisible ? 'visible' : ''}`}>
+        <h2 className={styles.title}>Lets's Talk ..</h2>
         <p className={styles.subtitle}>Send me a message and I'll get back to you as soon as possible</p>
 
         <form action="https://formspree.io/f/xeoonkeb" method="post" className={styles.formBox}>

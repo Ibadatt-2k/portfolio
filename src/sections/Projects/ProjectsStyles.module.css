@@ -28,9 +28,9 @@
 }
 
 .projectCard {
-  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-  border: 1px solid #4b5563;
-  border-radius: 6px;
+  background: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 12px;
   padding: 2rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -38,6 +38,7 @@
   gap: 1.5rem;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   /* Add slide-in animation to cards */
   /* increased animation duration from 0.6s to 1.2s and changed timing for smoother descent */
   animation: slideIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -56,8 +57,9 @@
 
 .projectCard:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border-color: var(--accent-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border-color: #1a1a1a;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .projectCard:hover::before {
@@ -77,10 +79,11 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--accent-color) 15%, var(--accent-color) 5%);
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
   border-radius: 12px;
   animation: float 3s ease-in-out infinite;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes float {
@@ -123,17 +126,17 @@
   font-size: 1.275rem;
   font-weight: 700;
   margin: 8;
-  color: rgb(0, 0, 0);
+  color: #1f2937;
   letter-spacing: -0.5px;
 }
 
 .description {
   line-height: 1.7;
-  color: #000000;
+  color: #374151;
   margin: 0;
   flex-grow: 1;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .buttonGroup {
@@ -162,7 +165,7 @@
   overflow: hidden;
   flex: 1;
   min-width: 110px;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Departure Mono', 'Space Mono', monospace;
 }
 
 
@@ -197,27 +200,29 @@
 }
 
 .primary {
-  background:#1f2937;
-  color: rgb(0, 0, 0);
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.15);
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: none;
 }
 
 .primary:hover {
-  box-shadow: 0 8px 25px rgba(var(--accent-color-rgb), 0.4);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
 }
 
 .secondary {
-  background: #d1d5db;
-  color: #1f2937;
-  border: 2px solid #9ca3af;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
 }
 
 .secondary:hover {
-  background: #e5e7eb;
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: #f5f5f5;
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transform: translateY(-2px);
 }
 
@@ -265,4 +270,55 @@
     padding: 0.65rem 0.85rem;
     font-size: 0.85rem;
   }
+}
+
+/* Dark mode overrides - preserve original dark mode styling */
+[data-theme='dark'] .projectCard {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+  border: 1px solid #4b5563;
+  box-shadow: none;
+}
+
+[data-theme='dark'] .projectCard:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: #4b5563;
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+}
+
+[data-theme='dark'] .icon {
+  background: linear-gradient(135deg, #1f2937 15%, #1f2937 5%);
+  box-shadow: none;
+}
+
+[data-theme='dark'] .title {
+  color: rgb(0, 0, 0);
+}
+
+[data-theme='dark'] .description {
+  color: #000000;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .primary {
+  background: #1f2937;
+  color: rgb(0, 0, 0);
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .primary:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  background: #1f2937;
+}
+
+[data-theme='dark'] .secondary {
+  background: #d1d5db;
+  color: #1f2937;
+  border: 2px solid #9ca3af;
+}
+
+[data-theme='dark'] .secondary:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  color: #1f2937;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }

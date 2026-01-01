@@ -6,16 +6,19 @@ import Hero from './sections/Hero/Hero';
 import Projects from './sections/Projects/Projects';
 import Skills from './sections/Skills/Skills';
 import Experience from './sections/Experience/Experience';
+
 function App() {
   return (
-    <div className="app">
-      <Hero />
-      <Projects />
-      <Experience />
-      <Skills />
-      <Contact />
-      <Footer />
-    </div>
+    <>
+      <div className="app">
+        <Hero />
+        <Projects />
+        <Experience />
+        <Skills />
+        <Contact />
+        <Footer />
+      </div>
+    </>
   );
 }
 

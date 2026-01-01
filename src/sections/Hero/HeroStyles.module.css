@@ -13,10 +13,17 @@
         border-radius: 50%; /* Makes it circular */
         overflow: hidden; /* Ensures content doesn't spill out */
         display: block; /* Useful if it's an inline element like an <img> */
-        border: 5px solid #000; /* Black ring, adjust thickness */
+        border: 5px solid #000000; /* Black accent border */
         box-sizing: border-box; /* Ensures border doesn't affect layout */
         margin-left: 70px;
         margin-bottom: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .hero:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(0, 0, 0, 0.15);
+        transform: scale(1.02);
     }
     .info{
             margin-bottom: -100px;
@@ -27,9 +34,14 @@
         justify-content: center;
         a{
             margin: 0;
+            transition: transform 0.3s ease;
             img{
                 width: 30px;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
             }
+        }
+        a:hover {
+            transform: translateY(-3px) scale(1.1);
         }
     }
     a{
@@ -39,8 +51,8 @@
     button{
        width: 100%;
         padding: 14px 24px;
-        background: #1f2937;
-        color: #000000;
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        color: #ffffff;
         border: none;
         border-radius: 8px;
         font-size: 1rem;
@@ -49,16 +61,17 @@
         transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 0.3px;
-        font-family: 'Roboto Mono', monospace;
+        font-family: 'Departure Mono', 'Space Mono', monospace;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
     button:hover {
-        transform: scale(1.05);
         transform: translateY(-2px);
-        background: linear-gradient(rgba(255, 255, 255, 0.3));
+        background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
     button:active {
-        transform: translateY(2px);
-        box-shadow: 0 2px 2px rgba(0,0,0,0.25);
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 }
 
@@ -88,6 +101,86 @@
     justify-content: center;
     gap: 29px;
 }
+
+/* Name wobble animation styles */
+.nameContainer {
+    cursor: pointer;
+    line-height: 0.8;
+    margin: 0;
+    padding: 0;
+    font-weight: 700;
+}
+
+.nameLine {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    line-height: 0.8;
+}
+
+.nameLetter {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+    cursor: pointer;
+    letter-spacing: -0.15em;
+    margin-right: -0.15em;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: letterFadeIn 0.6s ease-out forwards;
+}
+
+.nameLetter:hover {
+    animation: wobble 0.5s ease-in-out, letterFadeIn 0.6s ease-out forwards;
+    animation-fill-mode: both;
+}
+
+/* Staggered letter animation - letters appear one by one */
+@keyframes letterFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Wobble animation - each letter wobbles and returns to original position */
+@keyframes wobble {
+    0%, 100% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    10% {
+        transform: translateX(-2px) translateY(-3px) rotate(-3deg);
+    }
+    20% {
+        transform: translateX(2px) translateY(3px) rotate(3deg);
+    }
+    30% {
+        transform: translateX(-2px) translateY(2px) rotate(-2deg);
+    }
+    40% {
+        transform: translateX(2px) translateY(-2px) rotate(2deg);
+    }
+    50% {
+        transform: translateX(-1px) translateY(-1px) rotate(-1deg);
+    }
+    60% {
+        transform: translateX(1px) translateY(1px) rotate(1deg);
+    }
+    70% {
+        transform: translateX(-1px) translateY(0) rotate(-0.5deg);
+    }
+    80% {
+        transform: translateX(1px) translateY(0) rotate(0.5deg);
+    }
+    90% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+}
+
 
 @media (width >=800px){
     .container{
@@ -123,3 +216,32 @@
     }
 }
 
+/* Dark mode overrides - preserve original dark mode styling */
+[data-theme='dark'] .hero {
+  border: 5px solid #000;
+  box-shadow: none;
+}
+
+[data-theme='dark'] .hero:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+[data-theme='dark'] button {
+  background: #1f2937;
+  color: #000000;
+  box-shadow: none;
+}
+
+[data-theme='dark'] button:hover {
+  background: linear-gradient(rgba(255, 255, 255, 0.3));
+  box-shadow: none;
+}
+
+[data-theme='dark'] span a img {
+  filter: none;
+}
+
+[data-theme='dark'] span a:hover {
+  transform: none;
+}

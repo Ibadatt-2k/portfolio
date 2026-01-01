@@ -2,6 +2,7 @@
 
 import styles from "./ProjectsStyles.module.css"
 import { useState } from "react"
+import { useScrollAnimation } from "../../hooks/useScrollAnimation"
 
 const projects = [
   {
@@ -38,22 +39,31 @@ const projects = [
 
 export default function Projects() {
   const [hoveredId, setHoveredId] = useState(null)
+  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation({ threshold: 0.3 });
+  const { ref: card1Ref, isVisible: card1Visible } = useScrollAnimation({ threshold: 0.2 });
+  const { ref: card2Ref, isVisible: card2Visible } = useScrollAnimation({ threshold: 0.2 });
+  const { ref: card3Ref, isVisible: card3Visible } = useScrollAnimation({ threshold: 0.2 });
+
+  const cardRefs = [card1Ref, card2Ref, card3Ref];
+  const cardVisibles = [card1Visible, card2Visible, card3Visible];
 
   return (
     <section id="projects" className={styles.container}>
-      <div className={styles.header}>
+      <div ref={headerRef} className={`${styles.header} scroll-slide-left ${headerVisible ? 'visible' : ''}`}>
         <h1 className="sectionTitle">Projects</h1>
       </div>
 
       <div className={styles.projectsContainer}>
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <div
             key={project.id}
-            className={styles.projectCard}
+            ref={cardRefs[index]}
+            className={`${styles.projectCard} scroll-scale ${cardVisibles[index] ? 'visible' : ''}`}
             onMouseEnter={() => setHoveredId(project.id)}
             onMouseLeave={() => setHoveredId(null)}
             style={{
               "--accent-color": project.color,
+              transitionDelay: `${index * 0.1}s`,
             }}
           >
             <div className={styles.cardHeader}>
