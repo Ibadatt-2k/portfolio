@@ -87,7 +87,7 @@ function Hero() {
               </a>
             </span>
             <p className={styles.description}>
-                Bachelor of Computer Information Systems graduate with hands-on experience in Python software development, working as a Junior Software Engineer. I like to write, be it code or lyrics..
+                I holde a Bachelor's Degree in Computer Information Systems with hands-on experience in Python software development, working as a Junior Software Engineer. I like to write, be it code or lyrics..
             </p>
             <a href={CV} download className='post'>
                    <button className='hover'>
