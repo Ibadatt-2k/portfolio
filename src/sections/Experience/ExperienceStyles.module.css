@@ -166,6 +166,9 @@
 }
 
 @media (max-width: 768px) {
+  .timeline::before {
+    display: none;
+  }
   .experienceContainer {
     padding: 40px 15px;
   }
