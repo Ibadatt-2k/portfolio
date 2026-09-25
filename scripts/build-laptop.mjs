@@ -6,7 +6,10 @@
 //   └── lid           (pivot on the hinge; extras.closeAngle closes it)
 //       └── lid-mesh
 //
-//   node scripts/build-laptop.mjs "<path to laptop 3d model.glb>"
+// It writes two copies that differ only in texture size: laptop-8k.glb for
+// big high-DPI screens and laptop.glb (4K) for everything else.
+//
+//   node scripts/build-laptop.mjs "<path to laptop 3d model.glb>" [output dir]
 
 import { NodeIO } from '@gltf-transform/core'
 import { ALL_EXTENSIONS, KHRMaterialsUnlit } from '@gltf-transform/extensions'
@@ -22,8 +25,8 @@ import {
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 import sharp from 'sharp'
 
-const [input, output = 'public/models/laptop.glb'] = process.argv.slice(2)
-if (!input) throw new Error('Usage: node scripts/build-laptop.mjs <source.glb> [output.glb]')
+const [input, outDir = 'public/models'] = process.argv.slice(2)
+if (!input) throw new Error('Usage: node scripts/build-laptop.mjs <source.glb> [output dir]')
 
 // Measurements of the source model (front is +z, units ≈ laptop width):
 // the lid stands at the back, leaning TILT past vertical, with its screen
@@ -117,15 +120,25 @@ for (const material of root.listMaterials()) {
     .setMetallicRoughnessTexture(null)
 }
 
-// --- Shrink for the web: ~10% of the triangles, a 4K WebP texture, meshopt.
+// --- Shrink the geometry for the web: ~10% of the triangles, meshopt.
 await doc.transform(
   prune(),
   dedup(),
   weld(),
   simplify({ simplifier: MeshoptSimplifier, ratio: 0.1, error: 0.001 }),
-  textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [4096, 4096] }),
   meshopt({ encoder: MeshoptEncoder, level: 'medium' }),
 )
 
-await io.write(output, doc)
-console.log(`wrote ${output}`)
+// --- Write a copy per texture size, each re-encoded from the 8K original.
+// Full 8K keeps the keys and logo crisp on big high-DPI screens but needs
+// ~350 MB of GPU memory, so everything else gets 4K.
+const [texture] = root.listTextures()
+const [original, originalType] = [texture.getImage(), texture.getMimeType()]
+for (const [file, size] of [['laptop-8k.glb', 8192], ['laptop.glb', 4096]]) {
+  texture.setImage(original).setMimeType(originalType)
+  await doc.transform(
+    textureCompress({ encoder: sharp, targetFormat: 'webp', quality: 92, resize: [size, size] }),
+  )
+  await io.write(`${outDir}/${file}`, doc)
+  console.log(`wrote ${outDir}/${file}`)
+}

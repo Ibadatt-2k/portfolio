@@ -11,7 +11,7 @@ export default function ScreenSlides({ slides, index }: Props) {
         <section
           key={title}
           inert={i !== index}
-          className="flex h-full w-full shrink-0 flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_center,#1c1c1e,#000)]"
+          className="flex h-full w-full shrink-0 flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_center,#202023,#101012)]"
         >
           <span className="text-2xl font-medium tracking-[0.3em] text-white/40">
             {String(i + 1).padStart(2, '0')}

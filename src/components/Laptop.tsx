@@ -3,9 +3,13 @@ import {
   Box3,
   Group,
   MathUtils,
+  Mesh,
+  MeshBasicMaterial,
   Object3D,
   PerspectiveCamera,
   Scene,
+  Shape,
+  ShapeGeometry,
   Vector3,
   WebGLRenderer,
 } from 'three'
@@ -31,14 +35,21 @@ const ELEVATION = degToRad(10)
 const ZOOM = 1.4
 const ROOM = { side: 112, top: 24, phoneSide: 16, phoneBottom: 96 }
 
-// The display, in the lid's frame (origin on the hinge, lid open): ±halfWidth
-// across, from `bottom` to `top` along the lid, `face` in front of the hinge.
-const DISPLAY = { halfWidth: 0.466, bottom: 0.008, top: 0.645, face: 0.0125 }
+// The display (the lit area inside the bezel), in the lid's frame (origin on
+// the hinge, lid open): ±halfWidth across, from `bottom` to `top` along the
+// lid, `face` in front of the hinge, with rounded corners. Measured off a
+// straight-on render of the model, whose lid corners have a ~0.028 radius.
+const DISPLAY = { halfWidth: 0.478, bottom: 0.0046, top: 0.6539, face: 0.0125, radius: 0.018 }
+// When zoomed in, black "glass" covers the lid's whole front inside its rim
+// (display, bezel and the strip below), rounded in step with the lid's corners
+// and the display's, so they read as one sheet of glass the slides sit in.
+const GLASS = { halfWidth: 0.485, bottom: -0.003, top: 0.664, radius: 0.025 }
 // CSS px size of the page laid onto the display (same aspect as the display).
 const DISPLAY_W = 1280
 const DISPLAY_H = Math.round(
   (DISPLAY_W * (DISPLAY.top - DISPLAY.bottom)) / (2 * DISPLAY.halfWidth),
 )
+const DISPLAY_RADIUS_PX = (DISPLAY_W * DISPLAY.radius) / (2 * DISPLAY.halfWidth)
 
 type Props = { ref: Ref<LaptopHandle>; children: ReactNode }
 
@@ -69,6 +80,9 @@ export default function Laptop({ ref, children }: Props) {
     let viewHeight = 1 // world units visible top to bottom at the laptop
     let zoomTo = 1
     let lid: Object3D | null = null
+    // The GLASS: blacks out the display's wallpaper when zoomed in, so the
+    // slides (screen-blended on top) look lit by the display, not pasted on.
+    let blank: Mesh<ShapeGeometry, MeshBasicMaterial> | null = null
     let bounds: Box3 | null = null // of the open laptop, in model space
     let tilt = 0 // how far the open lid leans back past vertical
     // Height to hold at the screen's centre once zoomed so the display's
@@ -122,6 +136,8 @@ export default function Laptop({ ref, children }: Props) {
       rig.position.y =
         viewHeight * lerp(-0.85, 0, arrive) - lerp(0, lerp(0.3, displayMiddle, zoom), open) * scale
       lid.rotation.x = lid.userData.closeAngle * (1 - open)
+      blank!.material.opacity = smoothstep(zoom, 0.3, 0.8)
+      blank!.visible = blank!.material.opacity > 0
       renderer.render(scene, camera)
       placeDisplay(smoothstep(zoom, 0.5, 1))
     }
@@ -179,13 +195,33 @@ export default function Laptop({ ref, children }: Props) {
     const observer = new ResizeObserver(resize)
     observer.observe(el)
 
+    // The 8K texture only pays off where the laptop is drawn wider than a 4K
+    // one can cover (big high-DPI screens); elsewhere it'd just cost memory.
+    const detailed =
+      innerWidth * devicePixelRatio >= 2000 && renderer.capabilities.maxTextureSize >= 8192
+    const url = detailed ? '/models/laptop-8k.glb' : '/models/laptop.glb'
+
     let disposed = false
-    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/models/laptop.glb', (gltf) => {
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, (gltf) => {
       if (disposed) return
+      // Keep the texture sharp where it's seen at a slant, like the keyboard.
+      gltf.scene.traverse((object) => {
+        const map = object instanceof Mesh && (object.material as MeshBasicMaterial).map
+        if (map) map.anisotropy = renderer.capabilities.getMaxAnisotropy()
+      })
       bounds = new Box3().setFromObject(gltf.scene)
       rig.add(gltf.scene)
       lid = gltf.scene.getObjectByName('lid')!
       tilt = lid.userData.closeAngle - Math.PI / 2
+      // Drawn over the lid regardless of depth: the generated display isn't
+      // quite flat, and nothing's ever in front of it while it shows.
+      blank = new Mesh(
+        roundedRect(2 * GLASS.halfWidth, GLASS.top - GLASS.bottom, GLASS.radius),
+        new MeshBasicMaterial({ color: 0x000000, transparent: true, depthTest: false }),
+      )
+      blank.position.copy(onDisplay(0, (GLASS.top + GLASS.bottom) / 2))
+      blank.rotation.x = -tilt
+      lid.add(blank)
       const middle = onDisplay(0, (DISPLAY.top + DISPLAY.bottom) / 2).add(lid.position)
       displayMiddle = middle.y - Math.tan(ELEVATION) * middle.z
       fitZoom()
@@ -207,15 +243,32 @@ export default function Laptop({ ref, children }: Props) {
         aria-hidden
         className="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-700"
       />
+      {/* Screen-blended, so its black shows the blacked-out display beneath
+          and only lit content appears, as if from the screen itself. */}
       <div
         ref={display}
-        className="invisible absolute top-0 left-0 origin-top-left overflow-hidden bg-black"
-        style={{ width: DISPLAY_W, height: DISPLAY_H }}
+        className="invisible absolute top-0 left-0 origin-top-left overflow-hidden bg-black mix-blend-screen"
+        style={{ width: DISPLAY_W, height: DISPLAY_H, borderRadius: DISPLAY_RADIUS_PX }}
       >
         {children}
+        <div
+          aria-hidden
+          className="absolute top-0 left-1/2 h-[24px] w-[144px] -translate-x-1/2 rounded-b-[14px] bg-black"
+        />
       </div>
     </>
   )
+}
+
+// A width×height rectangle centred on the origin with all corners rounded.
+function roundedRect(width: number, height: number, radius: number) {
+  const [x, y] = [width / 2 - radius, height / 2 - radius]
+  const shape = new Shape()
+  shape.absarc(x, y, radius, 0, Math.PI / 2)
+  shape.absarc(-x, y, radius, Math.PI / 2, Math.PI)
+  shape.absarc(-x, -y, radius, Math.PI, (3 * Math.PI) / 2)
+  shape.absarc(x, -y, radius, (3 * Math.PI) / 2, 2 * Math.PI)
+  return new ShapeGeometry(shape, 24)
 }
 
 // CSS matrix3d mapping a w×h box onto a quad given as [top-left, top-right,
