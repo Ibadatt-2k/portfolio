@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { APPS, type App } from './ExperienceApps'
 import MacWindow from './MacWindow'
 import type { Slide } from './ScreenSlides'
+import { asset } from '../asset'
 
 // What's shown on the laptop's display, one component per slide. Sizes are
 // for the 1280px-wide page laid onto the display, which is shown scaled down;
@@ -56,7 +57,7 @@ function Profile() {
           onAnimationEnd={() => setSentNotice(false)}
           className="notify absolute top-12 right-12 flex w-[520px] items-center gap-6 rounded-[28px] border border-white/10 bg-[#2c2c2f]/90 p-6 text-left shadow-[0_24px_60px_rgb(0_0_0/0.5)] backdrop-blur-xl @max-3xl:top-3 @max-3xl:right-3 @max-3xl:left-3 @max-3xl:w-auto @max-3xl:gap-3 @max-3xl:rounded-2xl @max-3xl:p-3"
         >
-          <img src="/profile.webp" alt="" className="size-16 shrink-0 rounded-full object-cover @max-3xl:size-10" />
+          <img src={asset('profile.webp')} alt="" className="size-16 shrink-0 rounded-full object-cover @max-3xl:size-10" />
           <div>
             <p className="text-2xl font-semibold @max-3xl:text-base">Message sent</p>
             <p className="mt-1 text-xl text-white/60 @max-3xl:text-sm">Thanks! I’ll get back to you soon.</p>
@@ -81,7 +82,7 @@ function Profile() {
           >
             {/* A silver ring with a thin gap before the photo. */}
             <img
-              src="/profile.webp"
+              src={asset('profile.webp')}
               alt="Ibadatt"
               className="size-80 rounded-full border-[6px] border-[#1c1c1e] object-cover @max-3xl:size-50 @max-3xl:border-4"
             />
@@ -296,7 +297,7 @@ function Education() {
     <div className="flex flex-col items-center">
       <h3 className="text-8xl font-extrabold tracking-[-0.04em] @max-3xl:text-5xl">Education</h3>
       <div className="mt-14 flex items-center gap-10 rounded-3xl border border-white/10 bg-white/6 py-8 pr-14 pl-8 @max-3xl:mt-8 @max-3xl:flex-col @max-3xl:gap-4 @max-3xl:p-6 @max-3xl:text-center">
-        <img src="/ufv.webp" alt="UFV logo" className="size-36 shrink-0 rounded-[22%] @max-3xl:size-20" />
+        <img src={asset('ufv.webp')} alt="UFV logo" className="size-36 shrink-0 rounded-[22%] @max-3xl:size-20" />
         <div>
           <p className="text-4xl font-bold @max-3xl:text-xl">University of the Fraser Valley</p>
           <p className="mt-2 text-3xl text-white/75 @max-3xl:mt-1 @max-3xl:text-base">Bachelor’s degree, Computer Information Systems</p>
@@ -307,7 +308,7 @@ function Education() {
   )
 }
 
-const RESUME = '/Ibadatt_Aulakh_Resume.pdf'
+const RESUME = asset('Ibadatt_Aulakh_Resume.pdf')
 
 // Profiles to connect on, with their logos (from Simple Icons).
 const LINKS = [
@@ -342,7 +343,7 @@ function Resume() {
         className="relative block w-[300px] shrink-0 -rotate-3 @max-3xl:w-[150px] transition-transform duration-300 hover:scale-[1.03] hover:rotate-0"
       >
         <img
-          src="/resume-preview.webp"
+          src={asset('resume-preview.webp')}
           alt=""
           className="w-full rounded-xl shadow-[0_30px_70px_rgb(0_0_0/0.6)]"
         />
@@ -418,7 +419,7 @@ const photo = (src: string) => <img src={src} alt="" className="size-full object
 
 // The laptop display's slides, in order, with their Dock icons.
 export const SLIDES: Slide[] = [
-  { label: 'About me', icon: photo('/profile.webp'), content: <Profile /> },
+  { label: 'About me', icon: photo(asset('profile.webp')), content: <Profile /> },
   {
     label: 'Experience',
     icon: (
@@ -438,7 +439,7 @@ export const SLIDES: Slide[] = [
     ),
     content: <RepNation />,
   },
-  { label: 'Education', icon: photo('/ufv.webp'), content: <Education /> },
+  { label: 'Education', icon: photo(asset('ufv.webp')), content: <Education /> },
   {
     label: 'Résumé',
     icon: (

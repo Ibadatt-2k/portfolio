@@ -15,6 +15,7 @@ import {
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
+import { asset } from '../asset'
 
 /**
  * Scene 3's own progress: below 0 the laptop is out of sight, 0 → 1 it rises
@@ -235,7 +236,7 @@ export default function Laptop({ ref, children }: Props) {
     // one can cover (big high-DPI screens); elsewhere it'd just cost memory.
     const detailed =
       innerWidth * devicePixelRatio >= 2000 && renderer.capabilities.maxTextureSize >= 8192
-    const url = detailed ? '/models/laptop-8k.glb' : '/models/laptop.glb'
+    const url = asset(detailed ? 'models/laptop-8k.glb' : 'models/laptop.glb')
 
     let disposed = false
     new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, (gltf) => {

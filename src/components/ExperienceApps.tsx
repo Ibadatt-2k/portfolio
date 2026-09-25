@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { asset } from '../asset'
 
 // The companies I work for, shown as app icons under Experience; each opens
 // its own window. Sizes are for the 1280px-wide page on the laptop's display.
@@ -127,7 +128,7 @@ function ObjectBright() {
     <div className="flex h-[680px] @max-3xl:h-[calc(100cqh-72px)] @max-3xl:flex-col">
       <nav aria-label="Roles at ObjectBright" className="w-[330px] shrink-0 border-r border-white/8 bg-[#252528] p-6 @max-3xl:w-auto @max-3xl:border-r-0 @max-3xl:border-b @max-3xl:p-2">
         <div className="flex items-center gap-4 px-3 pb-8 @max-3xl:hidden">
-          <img src="/apps/objectbright.webp" alt="" className="size-16 rounded-[22%]" />
+          <img src={asset('apps/objectbright.webp')} alt="" className="size-16 rounded-[22%]" />
           <div>
             <p className="text-2xl font-bold">ObjectBright</p>
             <p className="text-lg text-white/50">May 2024 – Present</p>
@@ -201,7 +202,7 @@ function ObjectBright() {
 function Mercor() {
   return (
     <div className="flex gap-10 p-12 @max-3xl:flex-col @max-3xl:gap-4 @max-3xl:p-6">
-      <img src="/apps/mercor.webp" alt="" className="size-28 shrink-0 rounded-[22%] @max-3xl:size-16" />
+      <img src={asset('apps/mercor.webp')} alt="" className="size-28 shrink-0 rounded-[22%] @max-3xl:size-16" />
       <div>
         <p className="text-2xl font-medium tracking-[0.2em] text-white/45 uppercase @max-3xl:text-xs">Mercor</p>
         <h4 className="mt-2 text-6xl font-extrabold tracking-[-0.03em] @max-3xl:text-3xl">Generalist AI Expert</h4>
@@ -217,12 +218,12 @@ function Mercor() {
 export const APPS: App[] = [
   {
     name: 'ObjectBright',
-    icon: '/apps/objectbright.webp',
+    icon: asset('apps/objectbright.webp'),
     window: { className: 'w-[1160px] @max-3xl:w-[calc(100%-16px)]', content: <ObjectBright /> },
   },
   {
     name: 'Mercor',
-    icon: '/apps/mercor.webp',
+    icon: asset('apps/mercor.webp'),
     window: { className: 'w-[880px] @max-3xl:w-[calc(100%-16px)]', content: <Mercor /> },
   },
 ]
