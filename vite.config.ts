@@ -2,9 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig(({ command, isPreview }) => ({
+// Served from the root of the custom domain (ibadatt.dev), so no base path.
+export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // GitHub Pages serves the site from /portfolio/ (so builds, and previews of
-  // them, use that); the dev server stays at /.
-  base: command === 'build' || isPreview ? '/portfolio/' : '/',
-}))
+})
