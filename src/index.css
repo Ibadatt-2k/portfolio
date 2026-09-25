@@ -1,24 +1,139 @@
 @import 'tailwindcss';
 
-:root {
-  --font-heading: 'HelveticaNowDisplay-Medium', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'HelveticaNowDisplayW01-Rg', 'Helvetica Neue', Arial, sans-serif;
+/* The page never scrolls: everything is pinned and input drives --p instead. */
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
-  font-family: var(--font-body);
+  background: #000;
+  color: #fff;
+  font-family: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+  touch-action: pinch-zoom;
 }
 
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
+/*
+ * Each letter reads the stage's --p (0 = scene 1, 1 = scene 2, 2 = scene 3)
+ * and its own random travel for flying in (--xi vw, --yi vh, --ri deg) and
+ * out (--xo, --yo, --ro), starting once --p passes --in / --out.
+ */
+.letter {
+  --dur: 0.3;
+  --ti: clamp(0, (var(--p) - var(--in)) / var(--dur), 1);
+  --to: clamp(0, (var(--p) - var(--out)) / var(--dur), 1);
+  /* Share of the trip still to travel in (ease-out) / already travelled out (ease-in). */
+  --ei: calc((1 - var(--ti)) * (1 - var(--ti)) * (1 - var(--ti)));
+  --eo: calc(var(--to) * var(--to) * var(--to));
+  display: inline-block;
+  /* In from below, out upward and off the screen. */
+  transform: translate(
+      calc((var(--xi) * var(--ei) + var(--xo) * var(--eo)) * 1vw),
+      calc((var(--yi) * var(--ei) - var(--yo) * var(--eo)) * 1vh)
+    )
+    rotate(calc((var(--ri) * var(--ei) + var(--ro) * var(--eo)) * 1deg));
+  opacity: calc(1 - var(--ei) - var(--eo));
+  will-change: transform, opacity;
+}
+
+/* Apple-style round arrows either side of the zoomed laptop. */
+.slide-arrows {
+  --gap: 1.75rem;
+  opacity: clamp(0, (var(--p) - var(--in)) / var(--dur), 1);
+}
+
+.slide-arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  background: rgb(66 66 69 / 0.72);
+  color: rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(7px) saturate(1.8);
+  pointer-events: auto;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    opacity 0.2s;
+}
+
+.slide-arrow:hover {
+  background: rgb(84 84 88 / 0.8);
+  color: #fff;
+}
+
+.slide-arrow:disabled {
+  opacity: 0.36;
+  cursor: default;
+  pointer-events: none;
+}
+
+.slide-arrow-prev {
+  right: calc(50% + var(--laptop-half, 30vw) + var(--gap));
+}
+
+.slide-arrow-next {
+  left: calc(50% + var(--laptop-half, 30vw) + var(--gap));
+}
+
+/* No room beside the laptop on phones: sit side by side below it instead. */
+@media (max-width: 767px) {
+  .slide-arrow {
+    top: calc(var(--laptop-bottom, 75%) + 1.5rem);
+    translate: none;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .slide-arrow-prev {
+    right: calc(50% + 0.5rem);
+  }
+
+  .slide-arrow-next {
+    left: calc(50% + 0.5rem);
+  }
+}
+
+.scroll-hint {
+  opacity: calc(1 - var(--p) * 8);
+}
+
+.scroll-hint-line {
+  animation: scroll-hint 1.8s ease-in-out infinite;
+}
+
+@keyframes scroll-hint {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
   }
   50% {
-    opacity: 0;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  50.01% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
   }
 }
 
-.cursor-blink {
-  animation: blink 1s step-end infinite;
+@media (prefers-reduced-motion: reduce) {
+  .letter {
+    transform: none;
+  }
+
+  .scroll-hint-line {
+    animation: none;
+  }
 }
