@@ -1,8 +1,9 @@
-import { useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import BackgroundVideo from './components/BackgroundVideo'
 import Laptop, { type LaptopHandle } from './components/Laptop'
 import ScatterHeadline, { type Part } from './components/ScatterHeadline'
 import ScreenSlides from './components/ScreenSlides'
+import { SLIDES } from './components/Slides'
 import { useScrollProgress } from './hooks/useScrollProgress'
 
 const SCENE_1: Part[] = [
@@ -13,9 +14,6 @@ const SCENE_1: Part[] = [
 ]
 
 const SCENE_2: Part[] = [{ text: 'And…also a', muted: true }, { text: 'Systems Administrator' }]
-
-// Placeholder slides for the laptop's display until there's real content.
-const SLIDES = ['Slide one', 'Slide two', 'Slide three']
 
 // Progress runs 0 → 4: scene 1 (0) → scene 2 (1) → scene 3, where the laptop
 // rises in folded (2), opens (3), then zooms in on its display (4), where the
@@ -28,21 +26,42 @@ const SCENE_2_EXIT: [number, number] = [1, 1.25]
 const SCENE_3 = 1 // progress at which the laptop starts rising in
 const ARROWS_ENTER: [number, number] = [3.4, 4]
 
+// The journey rail's stops: where each sits in the progress above.
+const STOPS = [
+  { label: 'Intro', at: 0 },
+  { label: 'Also', at: 1 },
+  { label: 'The MacBook', at: 3 },
+  { label: 'Explore', at: 4 },
+]
+
 export default function App() {
   const stage = useRef<HTMLElement>(null)
   const laptop = useRef<LaptopHandle>(null)
   const [zoomed, setZoomed] = useState(false)
   const [slide, setSlide] = useState(0)
-  useScrollProgress(stage, END, (p) => {
+  const goTo = useScrollProgress(stage, END, (p) => {
     laptop.current?.setProgress(p - SCENE_3)
     setZoomed(p > (ARROWS_ENTER[0] + ARROWS_ENTER[1]) / 2)
   })
+  const showSlide = (i: number) => setSlide(Math.min(SLIDES.length - 1, Math.max(0, i)))
+
+  // ← and → turn the laptop's slides once it's zoomed in (not while typing).
+  useEffect(() => {
+    if (!zoomed) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof Element && e.target.closest('input, textarea')) return
+      const step = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0
+      if (step) setSlide((i) => Math.min(SLIDES.length - 1, Math.max(0, i + step)))
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [zoomed])
 
   return (
     <main ref={stage} className="relative h-full" style={{ '--p': 0 } as CSSProperties}>
       <BackgroundVideo />
       <Laptop ref={laptop}>
-        <ScreenSlides slides={SLIDES} index={slide} />
+        <ScreenSlides slides={SLIDES} index={slide} onChange={showSlide} />
       </Laptop>
 
       <div className="pointer-events-none relative grid h-full place-items-center px-4 sm:px-10">
@@ -70,7 +89,7 @@ export default function App() {
           type="button"
           aria-label="Previous slide"
           disabled={slide === 0}
-          onClick={() => setSlide(slide - 1)}
+          onClick={() => showSlide(slide - 1)}
           className="slide-arrow slide-arrow-prev"
         >
           <Chevron />
@@ -79,12 +98,30 @@ export default function App() {
           type="button"
           aria-label="Next slide"
           disabled={slide === SLIDES.length - 1}
-          onClick={() => setSlide(slide + 1)}
+          onClick={() => showSlide(slide + 1)}
           className="slide-arrow slide-arrow-next"
         >
           <Chevron className="-scale-x-100" />
         </button>
       </div>
+
+      {/* Where you are in the story (there's no scrollbar), and a way to jump. */}
+      <nav aria-label="Sections" className="rail">
+        {STOPS.map(({ label, at }) => (
+          <button
+            key={label}
+            type="button"
+            aria-label={label}
+            onClick={() => goTo(at)}
+            className="rail-stop"
+            style={{ '--at': at } as CSSProperties}
+          >
+            <span aria-hidden className="rail-label">
+              {label}
+            </span>
+          </button>
+        ))}
+      </nav>
 
       <div className="scroll-hint pointer-events-none absolute inset-x-0 bottom-8 flex flex-col items-center gap-3 text-[11px] font-medium tracking-[0.35em] text-white/55 uppercase">
         Scroll

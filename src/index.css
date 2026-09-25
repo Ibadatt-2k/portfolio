@@ -39,6 +39,152 @@ body {
   will-change: transform, opacity;
 }
 
+/* The macOS-style Dock at the foot of the laptop's screen. Icons swell as the
+   pointer passes (their neighbours a little), with a label above and a dot
+   under the current slide. */
+.dock {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 28px;
+  background: rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(24px) saturate(1.6);
+  transition:
+    translate 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s;
+}
+
+/* Phones get the slide arrows and swipes instead. */
+@container (width < 48rem) {
+  .dock {
+    display: none;
+  }
+}
+
+/* Tucked away while an app window or the contact form has the screen. */
+.slides:has([role='dialog'], form:not([inert])) .dock {
+  translate: -50% 150%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dock-item {
+  position: relative;
+  border-radius: 22%;
+  cursor: pointer;
+  transform-origin: bottom;
+  transition: scale 0.2s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.dock-item:active {
+  scale: 0.95;
+}
+
+.dock-item:focus-visible {
+  outline: 3px solid rgb(255 255 255 / 0.8);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .dock-item:hover {
+    scale: 1.45;
+  }
+
+  .dock-item:hover + .dock-item,
+  .dock-item:has(+ .dock-item:hover) {
+    scale: 1.18;
+  }
+}
+
+.dock-label {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  translate: -50% 0;
+  padding: 3px 12px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 8px;
+  background: rgb(44 44 47 / 0.92);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.dock-item:hover .dock-label,
+.dock-item:focus-visible .dock-label {
+  opacity: 1;
+}
+
+.dock-dot {
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  translate: -50% 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.8);
+  transition: opacity 0.3s;
+}
+
+/* Slide 6: a band of light sweeping across the headline, and a loading bar. */
+.shimmer {
+  background: linear-gradient(100deg, #8e8e93 35%, #fff 50%, #8e8e93 65%) 0 0 / 300% 100%;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.2s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.loading-bar {
+  animation: loading 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes loading {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 300% 0;
+  }
+}
+
+/* No need to keep animating slides that are out of view. */
+[inert] .shimmer,
+[inert] .loading-bar {
+  animation-play-state: paused;
+}
+
+/* Headline letters hop as the mouse runs over them. */
+@media (hover: hover) {
+  .letter {
+    pointer-events: auto;
+    transition: translate 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  .letter:hover {
+    translate: 0 -0.14em;
+    transition-duration: 0.12s;
+  }
+}
+
 /* Apple-style round arrows either side of the zoomed laptop. */
 .slide-arrows {
   --gap: 1.75rem;
@@ -62,12 +208,17 @@ body {
   transition:
     background-color 0.2s,
     color 0.2s,
-    opacity 0.2s;
+    opacity 0.2s,
+    scale 0.15s;
 }
 
 .slide-arrow:hover {
   background: rgb(84 84 88 / 0.8);
   color: #fff;
+}
+
+.slide-arrow:active {
+  scale: 0.92;
 }
 
 .slide-arrow:disabled {
@@ -84,10 +235,11 @@ body {
   left: calc(50% + var(--laptop-half, 30vw) + var(--gap));
 }
 
-/* No room beside the laptop on phones: sit side by side below it instead. */
+/* No room beside the laptop on phones: sit side by side below the panel. */
 @media (max-width: 767px) {
   .slide-arrow {
-    top: calc(var(--laptop-bottom, 75%) + 1.5rem);
+    top: auto;
+    bottom: 1.5rem;
     translate: none;
     width: 2.75rem;
     height: 2.75rem;
@@ -102,8 +254,154 @@ body {
   }
 }
 
+/* App icons popping open like a Mac's: spring up from small, overshoot, settle. */
+.app-pop {
+  animation: app-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes app-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(1.5rem) scale(0.3);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* A notification sliding in from the right, pausing, then sliding back out. */
+.notify {
+  animation: notify 4.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes notify {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(110%);
+  }
+  8%,
+  90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes notify-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  8%,
+  90% {
+    opacity: 1;
+  }
+}
+
+/* The journey rail: evenly spaced stops whose line fills as --p passes them
+   (the stops sit at progress 0, 1, 3 and 4, so each third fills in turn). */
+.rail {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Phones have the swipes and arrows, and no spare edge for it. */
+@media (max-width: 767px) {
+  .rail {
+    display: none;
+  }
+}
+
+.rail::before,
+.rail::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  right: 13.5px;
+  width: 1px;
+  pointer-events: none;
+}
+
+.rail::before {
+  bottom: 14px;
+  background: rgb(255 255 255 / 0.15);
+}
+
+.rail::after {
+  height: calc(
+    (100% - 28px) *
+      (clamp(0, var(--p), 1) + clamp(0, (var(--p) - 1) / 2, 1) + clamp(0, var(--p) - 3, 1)) / 3
+  );
+  background: rgb(255 255 255 / 0.6);
+}
+
+.rail-stop {
+  --on: clamp(0, (var(--p) - var(--at) + 0.1) * 10, 1);
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.rail-stop::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / calc(0.3 + 0.7 * var(--on)));
+  scale: calc(1 + 0.3 * var(--on));
+  transition: scale 0.2s;
+}
+
+.rail-stop:hover::before {
+  scale: 1.6;
+}
+
+.rail-stop:focus-visible {
+  outline: 2px solid rgb(255 255 255 / 0.7);
+}
+
+.rail-label {
+  position: absolute;
+  right: calc(100% + 6px);
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgb(44 44 47 / 0.9);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  opacity: 0;
+  translate: 6px 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s,
+    translate 0.15s;
+}
+
+.rail-stop:hover .rail-label,
+.rail-stop:focus-visible .rail-label {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* "Scroll" shows at the start, and again once the laptop has opened, which
+   is where people tend to stop before zooming in. */
 .scroll-hint {
-  opacity: calc(1 - var(--p) * 8);
+  opacity: max(calc(1 - var(--p) * 8), min(calc((var(--p) - 2.7) * 5), calc((3.3 - var(--p)) * 5)));
 }
 
 .scroll-hint-line {
@@ -133,7 +431,14 @@ body {
     transform: none;
   }
 
-  .scroll-hint-line {
+  .scroll-hint-line,
+  .app-pop,
+  .shimmer,
+  .loading-bar {
     animation: none;
+  }
+
+  .notify {
+    animation-name: notify-fade;
   }
 }

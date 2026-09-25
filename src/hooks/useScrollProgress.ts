@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react'
+import { useCallback, useEffect, useRef, type RefObject } from 'react'
 
 // Wheel/touch travel, in viewport heights, per 1 of progress (one scene).
 const TRAVEL = 1.5
@@ -20,7 +20,8 @@ const KEY_STEPS: Record<string, number> = {
  * The page never scrolls. Wheel, touch and keyboard input move a virtual
  * progress value from 0 to `end`; it's eased and written to the `--p` custom
  * property on `target` for CSS to animate against, and passed to
- * `onProgress` for anything animated from JS.
+ * `onProgress` for anything animated from JS. Returns a function that glides
+ * to a given progress, as if scrolled there.
  */
 export function useScrollProgress(
   target: RefObject<HTMLElement | null>,
@@ -31,6 +32,7 @@ export function useScrollProgress(
   useEffect(() => {
     callback.current = onProgress
   })
+  const jump = useRef<(to: number) => void>(() => {})
 
   useEffect(() => {
     const el = target.current
@@ -59,6 +61,8 @@ export function useScrollProgress(
       }
     }
 
+    jump.current = (to) => move(to - goal)
+
     const onWheel = (e: WheelEvent) => {
       if (e.ctrlKey) return // trackpad pinch-zoom
       const px =
@@ -78,6 +82,8 @@ export function useScrollProgress(
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
+      // Leave keys alone while someone's typing in a form field.
+      if (e.target instanceof Element && e.target.closest('input, textarea, select')) return
       const step = e.key === ' ' ? (e.shiftKey ? -0.5 : 0.5) : KEY_STEPS[e.key]
       if (step === undefined) return
       e.preventDefault()
@@ -96,4 +102,6 @@ export function useScrollProgress(
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [target, end])
+
+  return useCallback((to: number) => jump.current(to), [])
 }

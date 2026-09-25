@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useRef, type ReactNode, type Ref } from 'react'
+import { useEffect, useImperativeHandle, useRef, useState, type ReactNode, type Ref } from 'react'
 import {
   Box3,
   Group,
@@ -29,11 +29,13 @@ const FOV = 30
 // The camera looks down on the laptop a little, like a product shot.
 const ELEVATION = degToRad(10)
 // How much bigger the open laptop gets on the final zoom, at most. It's capped
-// to leave room (px) for the slide arrows: beside it on wide screens, where
-// it's a close-up (the lid stays in view, the base may run off the bottom),
-// and below it on phones.
+// to leave room (px) for the slide arrows and journey rail: beside it on wide
+// screens, where it's a close-up (the lid stays in view, the base may run off
+// the bottom), and below it on phones.
 const ZOOM = 1.4
-const ROOM = { side: 112, top: 24, phoneSide: 16, phoneBottom: 96 }
+const ROOM = { side: 136, top: 24, phoneSide: 16, phoneBottom: 96 }
+// How far the laptop leans towards the mouse (radians) before it zooms in.
+const LEAN = { x: degToRad(4), y: degToRad(7) }
 
 // The display (the lit area inside the bezel), in the lid's frame (origin on
 // the hinge, lid open): ±halfWidth across, from `bottom` to `top` along the
@@ -50,6 +52,12 @@ const DISPLAY_H = Math.round(
   (DISPLAY_W * (DISPLAY.top - DISPLAY.bottom)) / (2 * DISPLAY.halfWidth),
 )
 const DISPLAY_RADIUS_PX = (DISPLAY_W * DISPLAY.radius) / (2 * DISPLAY.halfWidth)
+// The display is too small to read on a phone, so there the page grows out of
+// it into a panel filling the screen, shown at its true size: `margin` around
+// it, and `below` it the room kept for the slide arrows (px).
+const SHEET = { margin: 12, below: 92 }
+
+type Size = { w: number; h: number }
 
 type Props = { ref: Ref<LaptopHandle>; children: ReactNode }
 
@@ -57,6 +65,8 @@ export default function Laptop({ ref, children }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const display = useRef<HTMLDivElement>(null)
   const setProgress = useRef<(p: number) => void>(() => {})
+  // The phone panel's size, or null when the page sits on the display.
+  const [sheet, setSheet] = useState<Size | null>(null)
 
   useImperativeHandle(ref, () => ({ setProgress: (p) => setProgress.current(p) }), [])
 
@@ -88,6 +98,7 @@ export default function Laptop({ ref, children }: Props) {
     // Height to hold at the screen's centre once zoomed so the display's
     // centre lands there (it sits behind the base, and the camera looks down).
     let displayMiddle = 0
+    let sheetSize: Size | null = null
 
     // A point on the display (x across, `along` the lid) in the lid's frame.
     const onDisplay = (x: number, along: number) =>
@@ -98,22 +109,29 @@ export default function Laptop({ ref, children }: Props) {
       )
 
     // Lay the children's page over the rendered display by mapping its
-    // corners onto the display's projected corners.
+    // corners onto the display's projected corners. On phones it then grows
+    // from there into the full-screen panel as it fades in.
     const placeDisplay = (opacity: number) => {
       screen.style.opacity = String(opacity)
       screen.style.visibility = opacity > 0 ? 'visible' : 'hidden'
       if (!opacity || !lid) return
       const { halfWidth: x, top, bottom } = DISPLAY
       const corners = [onDisplay(-x, top), onDisplay(x, top), onDisplay(x, bottom), onDisplay(-x, bottom)]
-      screen.style.transform = quadTransform(
-        DISPLAY_W,
-        DISPLAY_H,
-        corners.map((corner) => {
-          const { x, y } = lid!.localToWorld(corner).project(camera)
-          return [((x + 1) / 2) * el.clientWidth, ((1 - y) / 2) * el.clientHeight]
-        }),
-      )
+      let quad = corners.map((corner) => {
+        const { x, y } = lid!.localToWorld(corner).project(camera)
+        return [((x + 1) / 2) * el.clientWidth, ((1 - y) / 2) * el.clientHeight]
+      })
+      const { w, h } = sheetSize ?? { w: DISPLAY_W, h: DISPLAY_H }
+      if (sheetSize) {
+        const m = SHEET.margin
+        const panel = [[m, m], [m + w, m], [m + w, m + h], [m, m + h]]
+        quad = quad.map(([qx, qy], i) => [lerp(qx, panel[i][0], opacity), lerp(qy, panel[i][1], opacity)])
+      }
+      screen.style.transform = quadTransform(w, h, quad)
     }
+
+    // Where the mouse is (-1 → 1 across and down the window), eased towards.
+    const lean = { x: 0, y: 0, toX: 0, toY: 0, frame: 0 }
 
     const render = () => {
       if (!lid) return
@@ -128,9 +146,12 @@ export default function Laptop({ ref, children }: Props) {
       // laptop's middle centred, moving to the display's middle as it zooms.
       rig.visible = progress > 0
       rig.scale.setScalar(scale)
+      // A slight lean towards the mouse, gone once zoomed so the screen holds
+      // still for reading.
+      const sway = 1 - zoom
       rig.rotation.set(
-        lerp(0.9, 0, turn) + spin * 0.5,
-        lerp(-0.6, 0, turn) - spin * 2.4,
+        lerp(0.9, 0, turn) + spin * 0.5 + lean.y * LEAN.x * sway,
+        lerp(-0.6, 0, turn) - spin * 2.4 + lean.x * LEAN.y * sway,
         lerp(0.15, 0, turn) + spin * 0.3,
       )
       rig.position.y =
@@ -147,9 +168,9 @@ export default function Laptop({ ref, children }: Props) {
       render()
     }
 
-    // Pick the final zoom, and tell overlays around the laptop (the slide
-    // arrows) where its sides (--laptop-half, from the screen's centre) and
-    // bottom (--laptop-bottom) land once zoomed in.
+    // Pick the final zoom, and tell overlays beside the laptop (the slide
+    // arrows) where its sides land once zoomed in (--laptop-half, from the
+    // screen's centre).
     const fitZoom = () => {
       if (!bounds) return
       const { clientWidth: w, clientHeight: h } = el
@@ -171,9 +192,7 @@ export default function Laptop({ ref, children }: Props) {
           : half <= w / 2 - ROOM.side && top >= ROOM.top
       zoomTo = ZOOM
       while (zoomTo > 1 && !fits(extent(zoomTo))) zoomTo -= 0.01
-      const { half, bottom } = extent(zoomTo)
-      el.parentElement!.style.setProperty('--laptop-half', `${half}px`)
-      el.parentElement!.style.setProperty('--laptop-bottom', `${bottom}px`)
+      el.parentElement!.style.setProperty('--laptop-half', `${extent(zoomTo).half}px`)
     }
 
     const resize = () => {
@@ -189,9 +208,26 @@ export default function Laptop({ ref, children }: Props) {
       camera.position.set(0, dist * Math.sin(ELEVATION), dist * Math.cos(ELEVATION))
       camera.lookAt(0, 0, 0)
       viewHeight = 2 * dist * t
+      sheetSize = w < 768 ? { w: w - 2 * SHEET.margin, h: h - SHEET.margin - SHEET.below } : null
+      setSheet(sheetSize)
       fitZoom()
       render()
     }
+    const settleLean = () => {
+      lean.x += (lean.toX - lean.x) * 0.08
+      lean.y += (lean.toY - lean.y) * 0.08
+      if (progress > 0) render()
+      const moving = Math.abs(lean.toX - lean.x) + Math.abs(lean.toY - lean.y) > 0.002
+      lean.frame = moving ? requestAnimationFrame(settleLean) : 0
+    }
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      lean.toX = (e.clientX / innerWidth) * 2 - 1
+      lean.toY = (e.clientY / innerHeight) * 2 - 1
+      if (!lean.frame) lean.frame = requestAnimationFrame(settleLean)
+    }
+    window.addEventListener('pointermove', onPointerMove)
+
     const observer = new ResizeObserver(resize)
     observer.observe(el)
 
@@ -232,6 +268,8 @@ export default function Laptop({ ref, children }: Props) {
     return () => {
       disposed = true
       observer.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      cancelAnimationFrame(lean.frame)
       renderer.dispose()
     }
   }, [])
@@ -243,18 +281,26 @@ export default function Laptop({ ref, children }: Props) {
         aria-hidden
         className="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-700"
       />
-      {/* Screen-blended, so its black shows the blacked-out display beneath
-          and only lit content appears, as if from the screen itself. */}
+      {/* On the display it's screen-blended, so its black shows the blacked-out
+          display beneath and only lit content appears, as if from the screen
+          itself; as the phone panel it's an ordinary opaque card. Either way
+          it's a size container, so the slides can lay out for the narrow panel. */}
       <div
         ref={display}
-        className="invisible absolute top-0 left-0 origin-top-left overflow-hidden bg-black mix-blend-screen"
-        style={{ width: DISPLAY_W, height: DISPLAY_H, borderRadius: DISPLAY_RADIUS_PX }}
+        className={`invisible absolute top-0 left-0 origin-top-left overflow-hidden bg-black [container-type:size] ${sheet ? 'border border-white/10' : 'mix-blend-screen'}`}
+        style={
+          sheet
+            ? { width: sheet.w, height: sheet.h, borderRadius: 28 }
+            : { width: DISPLAY_W, height: DISPLAY_H, borderRadius: DISPLAY_RADIUS_PX }
+        }
       >
         {children}
-        <div
-          aria-hidden
-          className="absolute top-0 left-1/2 h-[24px] w-[144px] -translate-x-1/2 rounded-b-[14px] bg-black"
-        />
+        {!sheet && (
+          <div
+            aria-hidden
+            className="absolute top-0 left-1/2 h-[24px] w-[144px] -translate-x-1/2 rounded-b-[14px] bg-black"
+          />
+        )}
       </div>
     </>
   )
