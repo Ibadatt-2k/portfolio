@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { GrainGradient } from '@paper-design/shaders-react'
 import { APPS, type App } from './ExperienceApps'
 import MacWindow from './MacWindow'
@@ -25,12 +25,12 @@ function Profile() {
   const [flipped, setFlipped] = useState(false)
   const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle')
   const [sentNotice, setSentNotice] = useState(false)
-  const email = useRef<HTMLInputElement>(null)
+  const message = useRef<HTMLTextAreaElement>(null)
 
   const flip = (toForm: boolean) => {
     setFlipped(toForm)
-    // Ready to type once the card has turned.
-    if (toForm) setTimeout(() => email.current?.focus({ preventScroll: true }), 700)
+    // Ready to write once the card has turned.
+    if (toForm) setTimeout(() => message.current?.focus({ preventScroll: true }), 700)
   }
 
   // Sent in the background, so the visitor never leaves the page: on success
@@ -60,16 +60,20 @@ function Profile() {
   return (
     <div className="flex items-center @max-3xl:flex-col">
       {sentNotice && (
-        // A macOS-style notification that slides in, then away on its own.
+        // A slip of the postcard's paper, postmarked and signed, that slides
+        // in and then away on its own.
         <div
           role="status"
           onAnimationEnd={() => setSentNotice(false)}
-          className="notify absolute top-12 right-12 flex w-[520px] items-center gap-6 rounded-[28px] border border-white/10 bg-[#2c2c2f]/90 p-6 text-left shadow-[0_24px_60px_rgb(0_0_0/0.5)] backdrop-blur-xl @max-3xl:top-3 @max-3xl:right-3 @max-3xl:left-3 @max-3xl:w-auto @max-3xl:gap-3 @max-3xl:rounded-2xl @max-3xl:p-3"
+          className="notify paper absolute top-12 right-12 flex w-[560px] items-center gap-7 rounded-[12px] py-7 pr-10 pl-7 text-left text-ink shadow-[0_24px_60px_rgb(0_0_0/0.5)] @max-3xl:top-3 @max-3xl:right-3 @max-3xl:left-3 @max-3xl:w-auto @max-3xl:gap-3.5 @max-3xl:rounded-lg @max-3xl:p-3.5"
         >
-          <img src={asset('profile.webp')} alt="" className="size-16 shrink-0 rounded-full object-cover @max-3xl:size-10" />
+          <Postmark ringOnly className="w-[104px] shrink-0 -rotate-12 @max-3xl:w-14" />
           <div>
-            <p className="text-2xl font-semibold @max-3xl:text-base">Message sent</p>
-            <p className="mt-1 text-xl text-white/60 @max-3xl:text-sm">Thanks! I’ll get back to you soon.</p>
+            <p className="font-mono text-base tracking-[0.3em] text-ink/50 uppercase @max-3xl:text-[10px]">Posted</p>
+            <p className="mt-2 font-serif text-[2rem] leading-tight @max-3xl:mt-1 @max-3xl:text-lg">
+              Thanks for writing. I’ll get back to you soon.
+            </p>
+            <p className="mt-1.5 font-serif text-2xl text-ink/60 italic @max-3xl:mt-0.5 @max-3xl:text-base">Ibadatt</p>
           </div>
         </div>
       )}
@@ -78,9 +82,9 @@ function Profile() {
           aria-hidden
           className={`absolute -inset-16 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.13),transparent)] transition-opacity duration-500 ${flipped ? 'opacity-0' : ''}`}
         />
-        {/* The coin: spins over and grows into a card, the form on its back. */}
+        {/* The coin: spins over and grows into a card, a postcard on its back. */}
         <div
-          className={`relative transition-[width,height,transform] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${flipped ? 'h-[700px] w-[640px] [transform:rotateY(180deg)] @max-3xl:h-[470px] @max-3xl:w-[min(340px,100cqw-40px)]' : 'size-[332px] hover:[transform:rotateY(18deg)] @max-3xl:size-[212px]'}`}
+          className={`relative transition-[width,height,transform] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${flipped ? 'h-[580px] w-[900px] [transform:rotateY(180deg)] @max-3xl:h-[540px] @max-3xl:w-[min(340px,100cqw-32px)]' : 'size-[332px] hover:[transform:rotateY(18deg)] @max-3xl:size-[212px]'}`}
         >
           <button
             type="button"
@@ -96,60 +100,83 @@ function Profile() {
               className="size-80 rounded-full border-[6px] border-[#1c1c1e] object-cover @max-3xl:size-50 @max-3xl:border-4"
             />
           </button>
+          {/* The back of the photo is a postcard: a note on the left, written
+              on ruled lines, and on the right a stamp (the photo again), who
+              it's to, and who it's from. */}
           <form
             inert={!flipped}
             onSubmit={send}
-            className="absolute inset-0 flex flex-col rounded-[32px] border border-cream/12 bg-[#171513] p-12 text-left shadow-[0_40px_90px_rgb(0_0_0/0.6)] [backface-visibility:hidden] [transform:rotateY(180deg)] @max-3xl:rounded-[24px] @max-3xl:p-6"
+            aria-label="Send me a message"
+            className="paper absolute inset-0 grid grid-cols-[1.15fr_1fr] grid-rows-[auto_1fr] rounded-[14px] px-12 pt-8 pb-10 text-left text-ink shadow-[0_40px_90px_rgb(0_0_0/0.6)] [backface-visibility:hidden] [transform:rotateY(180deg)] @max-3xl:grid-cols-1 @max-3xl:grid-rows-[auto_1fr_auto] @max-3xl:rounded-[10px] @max-3xl:px-5 @max-3xl:pt-4 @max-3xl:pb-5"
           >
-            <button
-              type="button"
-              onClick={() => flip(false)}
-              aria-label="Flip back to my photo"
-              className="absolute top-9 right-9 grid size-14 cursor-pointer place-items-center rounded-full bg-cream/8 text-cream/70 transition-colors hover:bg-cream/15 hover:text-cream @max-3xl:top-4 @max-3xl:right-4 @max-3xl:size-10"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden className="size-7 @max-3xl:size-5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            </button>
-            <p className="font-display text-7xl leading-none uppercase @max-3xl:text-4xl">Let’s talk</p>
-            <p className="mt-3 font-serif text-3xl text-cream/60 italic @max-3xl:mt-1.5 @max-3xl:text-lg">Leave your email and a short message.</p>
             <input type="hidden" name="_subject" value="New message from your portfolio" />
-            <label htmlFor="contact-email" className={`mt-10 ${LABEL} @max-3xl:mt-5`}>
-              Email
-            </label>
-            <input
-              ref={email}
-              id="contact-email"
-              name="email"
-              type="email"
-              required
-              placeholder="you@example.com"
-              className="mt-3 h-16 rounded-lg border border-cream/15 bg-cream/5 px-6 text-2xl outline-none placeholder:text-cream/30 focus:border-signal @max-3xl:mt-1.5 @max-3xl:h-11 @max-3xl:rounded-md @max-3xl:px-4 @max-3xl:text-base"
-            />
-            <label htmlFor="contact-message" className={`mt-7 ${LABEL} @max-3xl:mt-3.5`}>
-              Message
-            </label>
-            <textarea
-              id="contact-message"
-              name="message"
-              required
-              maxLength={500}
-              rows={4}
-              placeholder="Say hi…"
-              className="mt-3 resize-none rounded-lg border border-cream/15 bg-cream/5 px-6 py-5 text-2xl leading-snug outline-none placeholder:text-cream/30 focus:border-signal @max-3xl:mt-1.5 @max-3xl:rounded-md @max-3xl:px-4 @max-3xl:py-3 @max-3xl:text-base"
-            />
-            <button
-              type="submit"
-              disabled={status === 'sending'}
-              className={`mt-auto h-16 ${BUTTON} text-2xl disabled:cursor-default disabled:opacity-60 @max-3xl:h-11 @max-3xl:text-sm`}
-            >
-              {status === 'sending' ? 'Sending…' : 'Send'}
-            </button>
-            {status === 'error' && (
-              <p role="alert" className="mt-4 text-center text-xl text-[#ff7a70] @max-3xl:mt-2 @max-3xl:text-sm">
-                Couldn’t send that. Please try again.
-              </p>
-            )}
+            <p aria-hidden className="col-span-full text-center font-mono text-lg tracking-[0.6em] text-ink/50 @max-3xl:text-[10px]">
+              POST CARD
+            </p>
+
+            <div className="mt-6 flex flex-col border-r-2 border-ink/20 pr-10 @max-3xl:mt-3 @max-3xl:border-r-0 @max-3xl:border-b @max-3xl:pr-0 @max-3xl:pb-4">
+              <label htmlFor="contact-message" className="font-serif text-[2.6rem] leading-none italic @max-3xl:text-2xl">
+                Dear Ibadatt,
+              </label>
+              <textarea
+                ref={message}
+                id="contact-message"
+                name="message"
+                required
+                maxLength={500}
+                placeholder="Say hi…"
+                className="ruled mt-3 min-h-0 flex-1 resize-none bg-transparent font-serif text-[2rem] italic outline-none placeholder:text-ink/35 @max-3xl:mt-2 @max-3xl:text-lg @max-3xl:[--rule:1px]"
+              />
+            </div>
+
+            <div className="mt-6 flex min-h-0 flex-col pl-10 @max-3xl:mt-3 @max-3xl:pl-0">
+              <div className="flex items-start justify-end gap-5 @max-3xl:absolute @max-3xl:top-3 @max-3xl:right-4">
+                <Postmark className="mt-4 w-[196px] @max-3xl:hidden" />
+                <Stamp />
+              </div>
+              <p className="mt-auto font-mono text-base tracking-[0.3em] text-ink/50 uppercase @max-3xl:text-[10px]">To</p>
+              <p className="mt-1 border-b-2 border-ink/20 font-serif text-[1.9rem] leading-[1.5] italic @max-3xl:border-b @max-3xl:text-lg">Ibadatt Aulakh</p>
+              <p className="border-b-2 border-ink/20 font-serif text-[1.9rem] leading-[1.5] italic @max-3xl:border-b @max-3xl:text-lg">ibadatt.dev</p>
+              <label
+                htmlFor="contact-email"
+                className="mt-5 font-mono text-base tracking-[0.3em] text-ink/50 uppercase @max-3xl:mt-3 @max-3xl:text-[10px]"
+              >
+                From
+              </label>
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                required
+                placeholder="your email"
+                className="mt-1 border-b-2 border-ink/20 bg-transparent font-serif text-[1.9rem] leading-[1.5] italic outline-none placeholder:text-ink/35 autofill:shadow-[inset_0_0_0_100px_var(--color-cream)] focus:border-ink @max-3xl:border-b @max-3xl:text-lg"
+              />
+              <div className="mt-7 flex items-center justify-between gap-4 @max-3xl:mt-4">
+                <button
+                  type="button"
+                  onClick={() => flip(false)}
+                  className="flex cursor-pointer items-center gap-2.5 font-mono text-base tracking-[0.2em] text-ink/55 uppercase transition-colors hover:text-ink @max-3xl:gap-1.5 @max-3xl:text-[10px]"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden className="size-5 @max-3xl:size-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5" />
+                    <path d="M3.5 3.5v5h5" />
+                  </svg>
+                  Turn over
+                </button>
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  className="cursor-pointer rounded-md bg-ink px-10 py-4 font-mono text-lg tracking-[0.25em] text-cream uppercase transition hover:bg-[#2b2724] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink active:scale-[0.97] disabled:cursor-default disabled:opacity-60 @max-3xl:px-5 @max-3xl:py-2.5 @max-3xl:text-[11px]"
+                >
+                  {status === 'sending' ? 'Sending…' : 'Send'}
+                </button>
+              </div>
+              {status === 'error' && (
+                <p role="alert" className="mt-3 text-right font-mono text-sm tracking-wide text-ink/70 @max-3xl:text-[10px]">
+                  Couldn’t send that. Please try again.
+                </p>
+              )}
+            </div>
           </form>
         </div>
       </div>
@@ -167,6 +194,50 @@ function Profile() {
         </p>
       </div>
     </div>
+  )
+}
+
+/** The postcard's stamp: the profile photo in black and white, perforated. */
+function Stamp() {
+  return (
+    <span aria-hidden className="drop-shadow-[0_2px_2px_rgb(0_0_0/0.18)]">
+      <span className="stamp block w-[110px] @max-3xl:w-[50px] @max-3xl:[--tile:5px]">
+        <img src={asset('profile.webp')} alt="" className="aspect-[4/5] w-full object-cover grayscale contrast-[1.15]" />
+        <span className="block pt-1.5 text-center font-mono text-[11px] tracking-[0.25em] text-ink/70 @max-3xl:hidden">
+          IBADATT
+        </span>
+      </span>
+    </span>
+  )
+}
+
+/**
+ * A postmark: the site's name around today's date, with wavy lines beside it
+ * (or just the ring).
+ */
+function Postmark({ ringOnly = false, className = '' }: { ringOnly?: boolean; className?: string }) {
+  const ring = useId()
+  const [day, month, year] = new Date()
+    .toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    .toUpperCase()
+    .split(' ')
+  return (
+    <svg viewBox={ringOnly ? '0 0 120 120' : '0 0 196 120'} aria-hidden className={`text-ink/45 ${className}`} fill="none" stroke="currentColor">
+      <path id={ring} d="M60 60m-43 0a43 43 0 1 1 86 0a43 43 0 1 1-86 0" stroke="none" />
+      <circle cx="60" cy="60" r="55" strokeWidth="2.5" />
+      <circle cx="60" cy="60" r="32" strokeWidth="1.5" />
+      <text fill="currentColor" stroke="none" fontFamily="JetBrains Mono, monospace" fontSize="10.5" letterSpacing="2.4">
+        <textPath href={`#${ring}`}>IBADATT.DEV · IBADATT.DEV · </textPath>
+      </text>
+      <text x="60" y="58" textAnchor="middle" fill="currentColor" stroke="none" fontFamily="JetBrains Mono, monospace" fontSize="13">
+        {day} {month}
+      </text>
+      <text x="60" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontFamily="JetBrains Mono, monospace" fontSize="11">
+        {year}
+      </text>
+      {!ringOnly &&
+        [36, 52, 68, 84].map((y) => <path key={y} d={`M124 ${y}q9-7 18 0t18 0t18 0t18 0`} strokeWidth="2.5" />)}
+    </svg>
   )
 }
 

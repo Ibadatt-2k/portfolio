@@ -19,12 +19,12 @@ body,
   overscroll-behavior: none;
 }
 
-/* The system font is the laptop's own (its Dock, windows and notifications);
-   the page's words use the display, serif and mono faces above. */
+/* Three faces throughout: the serif for reading, the display face for
+   headlines and the mono for labels and controls. */
 body {
   background: var(--color-ink);
   color: #fff;
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   touch-action: pinch-zoom;
 }
 
@@ -108,6 +108,35 @@ body {
   }
 }
 
+/* The postcard on the back of the profile photo (Slides): card stock with a
+   little grain, ruled lines that scroll with what's written on them, and a
+   stamp with perforated edges (a hole every --tile, centred on the edges). */
+.paper {
+  background: var(--color-cream)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+}
+
+.ruled {
+  --line: 1.6em;
+  --rule: 2px;
+  line-height: var(--line);
+  background: repeating-linear-gradient(
+      transparent 0 calc(var(--line) - var(--rule)),
+      rgb(12 11 10 / 0.16) calc(var(--line) - var(--rule)) var(--line)
+    )
+    local;
+}
+
+.stamp {
+  --tile: 10px;
+  padding: calc(var(--tile) * 0.8);
+  background: #fbf8f2;
+  mask:
+    radial-gradient(circle, #0000 calc(var(--tile) * 0.3), #000 calc(var(--tile) * 0.3 + 0.5px))
+      calc(var(--tile) / -2) calc(var(--tile) / -2) / var(--tile) var(--tile),
+    linear-gradient(#000 0 0) content-box;
+}
+
 /* The macOS-style Dock at the foot of the laptop's screen. Icons swell as the
    pointer passes (their neighbours a little), with a label above and a dot
    under the current slide. */
@@ -180,8 +209,10 @@ body {
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 8px;
   background: rgb(44 44 47 / 0.92);
-  font-size: 15px;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
@@ -235,6 +266,12 @@ body {
     translate: 0 -0.06em;
     transition-duration: 0.12s;
   }
+}
+
+/* A headline that's gone to dust (Dust) is still laid out, over the
+   laptop's screen, so its letters mustn't take the screen's clicks. */
+[data-dust] .letter {
+  pointer-events: none;
 }
 
 /* Apple-style round arrows either side of the zoomed laptop. */
@@ -325,7 +362,8 @@ body {
   }
 }
 
-/* A notification sliding in from the right, pausing, then sliding back out. */
+/* A slip of paper sliding in from the right to rest a little askew, pausing,
+   then sliding back out. */
 .notify {
   animation: notify 4.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -334,12 +372,12 @@ body {
   0%,
   100% {
     opacity: 0;
-    transform: translateX(110%);
+    transform: translateX(110%) rotate(4deg);
   }
   8%,
   90% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) rotate(-1.5deg);
   }
 }
 
@@ -432,9 +470,10 @@ body {
   padding: 3px 10px;
   border-radius: 6px;
   background: rgb(44 44 47 / 0.9);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
   translate: 6px 0;

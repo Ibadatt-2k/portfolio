@@ -63,7 +63,7 @@ export default function MacWindow({ title, from, onClose, className, children }:
               <path d="M6 2.5v7M2.5 6h7" />
             </TrafficLight>
           </div>
-          <p className="absolute inset-x-0 text-center text-xl font-semibold text-white/70 @max-3xl:text-sm">
+          <p className="absolute inset-x-0 text-center font-mono text-base tracking-[0.2em] text-white/60 uppercase @max-3xl:text-[10px]">
             {title}
           </p>
         </div>

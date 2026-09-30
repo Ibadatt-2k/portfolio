@@ -130,8 +130,8 @@ function ObjectBright() {
         <div className="flex items-center gap-4 px-3 pb-8 @max-3xl:hidden">
           <img src={asset('apps/objectbright.webp')} alt="" className="size-16 rounded-[22%]" />
           <div>
-            <p className="text-2xl font-bold">ObjectBright</p>
-            <p className="text-lg text-white/50">May 2024 – Present</p>
+            <p className="font-display text-3xl uppercase">ObjectBright</p>
+            <p className="mt-1 font-mono text-sm tracking-wide text-white/50">May 2024 – Present</p>
           </div>
         </div>
         {/* A timeline: a line through each role's dot, newest at the top. */}
@@ -148,8 +148,8 @@ function ObjectBright() {
                   className={`mt-2 size-3.5 shrink-0 rounded-full ring-4 ring-[#252528] @max-3xl:hidden ${i === selected ? 'bg-white' : 'bg-white/35'}`}
                 />
                 <span>
-                  <span className="block text-xl font-semibold @max-3xl:text-sm">{r.title}</span>
-                  <span className="block text-base text-white/50 @max-3xl:text-[11px]">{r.dates}</span>
+                  <span className="block text-2xl leading-tight @max-3xl:text-base">{r.title}</span>
+                  <span className="mt-1 block font-mono text-sm tracking-wide text-white/50 @max-3xl:mt-0 @max-3xl:text-[10px]">{r.dates}</span>
                 </span>
               </button>
             </li>
@@ -169,18 +169,18 @@ function ObjectBright() {
         <dl className="mt-8 grid grid-cols-3 divide-x divide-white/10 border-y border-white/10 @max-3xl:mt-4">
           {role.stats.map(({ value, label }) => (
             <div key={label} className="flex flex-col-reverse gap-1 px-6 py-5 first:pl-0 @max-3xl:px-2.5 @max-3xl:py-2.5 @max-3xl:first:pl-0">
-              <dt className="text-lg text-white/55 @max-3xl:text-[10px] @max-3xl:leading-tight">{label}</dt>
-              <dd className="font-display text-5xl uppercase @max-3xl:text-xl">{value}</dd>
+              <dt className="font-mono text-sm tracking-wide text-white/55 uppercase @max-3xl:text-[9px] @max-3xl:leading-tight">{label}</dt>
+              <dd className="font-display text-5xl uppercase @max-3xl:text-lg">{value}</dd>
             </div>
           ))}
         </dl>
 
         <ul className="mt-10 flex flex-col gap-6 @max-3xl:mt-5 @max-3xl:gap-3">
           {role.highlights.map(([outcome, how]) => (
-            <li key={outcome} className="flex gap-4 text-[26px] leading-snug text-white/60 @max-3xl:gap-2.5 @max-3xl:text-sm">
+            <li key={outcome} className="flex gap-4 text-[29px] leading-snug text-white/60 @max-3xl:gap-2.5 @max-3xl:text-base">
               <span aria-hidden className="mt-3.5 size-2 shrink-0 rounded-full bg-white/40 @max-3xl:mt-1.5 @max-3xl:size-1.5" />
               <p>
-                <strong className="font-semibold text-white">{outcome}</strong>
+                <strong className="font-normal text-white">{outcome}</strong>
                 {how}
               </p>
             </li>
@@ -207,7 +207,7 @@ function Mercor() {
       <div>
         <p className="font-mono text-xl tracking-[0.2em] text-white/45 uppercase @max-3xl:text-xs">Mercor</p>
         <h4 className="mt-3 font-display text-7xl leading-none uppercase @max-3xl:mt-2 @max-3xl:text-4xl">Generalist AI Expert</h4>
-        <p className="mt-6 text-3xl leading-snug text-white/75 @max-3xl:mt-3 @max-3xl:text-base">
+        <p className="mt-6 text-[2.1rem] leading-snug text-white/75 @max-3xl:mt-3 @max-3xl:text-lg">
           I worked as a generalist AI expert, reviewing AI models and their accuracy and providing
           detailed feedback.
         </p>

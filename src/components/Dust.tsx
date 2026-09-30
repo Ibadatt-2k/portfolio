@@ -225,11 +225,20 @@ export default function Dust({ ref, snaps }: Props) {
     const el = canvas.current!
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
     let progress = 0
+    // Show a headline's own text as much as `opacity`. Once it's started to
+    // go it's marked data-dust, so its letters (still laid out, where the
+    // laptop's screen ends up) stop catching clicks; see .letter in index.css.
+    const showText = ({ target }: Snap, opacity: string, d: number) => {
+      const el = target.current
+      if (!el) return
+      if (el.style.opacity !== opacity) el.style.opacity = opacity
+      el.toggleAttribute('data-dust', d > 0)
+    }
     // Without WebGL the headlines simply fade.
     const fade = () =>
       snaps.forEach((snap) => {
         const d = dissolved(snap, progress)
-        if (snap.target.current) snap.target.current.style.opacity = String(1 - d)
+        showText(snap, String(1 - d), d)
       })
     const gl = el.getContext('webgl2', { alpha: false, antialias: false, premultipliedAlpha: true })
     if (!gl) {
@@ -366,9 +375,7 @@ export default function Dust({ ref, snaps }: Props) {
         const d = dissolved(snap, progress)
         // The page's text shows while the headline's whole (or until it's
         // been pictured), this picture of it while it's going.
-        const opacity = b ? (d > 0 ? '0' : '') : String(1 - d)
-        const target = snap.target.current
-        if (target && target.style.opacity !== opacity) target.style.opacity = opacity
+        showText(snap, b ? (d > 0 ? '0' : '') : String(1 - d), d)
         if (!b || d <= 0 || d >= 1) return
 
         for (const p of [text, grains]) {
