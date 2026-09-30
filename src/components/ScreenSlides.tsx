@@ -37,7 +37,7 @@ export default function ScreenSlides({ slides, index, onChange }: Props) {
             aria-label={label}
             inert={i !== index}
             // Bottom padding keeps content centred above the Dock.
-            className="relative flex h-full w-full shrink-0 flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_center,#202023,#101012)] pb-24 @max-3xl:px-5 @max-3xl:pb-0"
+            className="relative flex h-full w-full shrink-0 flex-col items-center justify-center gap-6 bg-[radial-gradient(ellipse_at_center,#1f1d1a,#0e0d0c)] pb-24 text-cream @max-3xl:px-5 @max-3xl:pb-0"
           >
             {content}
           </section>

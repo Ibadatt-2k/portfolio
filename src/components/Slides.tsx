@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { GrainGradient } from '@paper-design/shaders-react'
 import { APPS, type App } from './ExperienceApps'
 import MacWindow from './MacWindow'
 import type { Slide } from './ScreenSlides'
@@ -11,6 +12,14 @@ import { asset } from '../asset'
 
 // Where the "Let's talk" form on the back of the profile photo is sent.
 const FORMSPREE = 'https://formspree.io/f/xeoonkeb'
+
+// The pages' type, as in the intro: poster headlines, mono labels, and
+// paper-white buttons that turn orange. (The windows, Dock and notification
+// are the laptop's own, so they keep its system font.)
+const TITLE = 'font-display text-[8.5rem] leading-[0.9] text-balance uppercase @max-3xl:text-6xl'
+const LABEL = 'font-mono text-xl tracking-[0.2em] text-cream/50 uppercase @max-3xl:text-[11px]'
+const BUTTON =
+  'cursor-pointer rounded-lg bg-cream font-mono tracking-[0.12em] text-ink uppercase transition hover:bg-signal focus-visible:bg-signal focus-visible:outline-none active:scale-[0.97]'
 
 function Profile() {
   const [flipped, setFlipped] = useState(false)
@@ -90,22 +99,22 @@ function Profile() {
           <form
             inert={!flipped}
             onSubmit={send}
-            className="absolute inset-0 flex flex-col rounded-[40px] border border-white/10 bg-[#1e1e20] p-12 text-left shadow-[0_40px_90px_rgb(0_0_0/0.6)] [backface-visibility:hidden] [transform:rotateY(180deg)] @max-3xl:rounded-[28px] @max-3xl:p-6"
+            className="absolute inset-0 flex flex-col rounded-[32px] border border-cream/12 bg-[#171513] p-12 text-left shadow-[0_40px_90px_rgb(0_0_0/0.6)] [backface-visibility:hidden] [transform:rotateY(180deg)] @max-3xl:rounded-[24px] @max-3xl:p-6"
           >
             <button
               type="button"
               onClick={() => flip(false)}
               aria-label="Flip back to my photo"
-              className="absolute top-9 right-9 grid size-14 cursor-pointer place-items-center rounded-full bg-white/8 text-white/70 transition-colors hover:bg-white/15 hover:text-white @max-3xl:top-4 @max-3xl:right-4 @max-3xl:size-10"
+              className="absolute top-9 right-9 grid size-14 cursor-pointer place-items-center rounded-full bg-cream/8 text-cream/70 transition-colors hover:bg-cream/15 hover:text-cream @max-3xl:top-4 @max-3xl:right-4 @max-3xl:size-10"
             >
               <svg viewBox="0 0 24 24" aria-hidden className="size-7 @max-3xl:size-5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             </button>
-            <p className="text-5xl font-extrabold tracking-[-0.03em] @max-3xl:text-3xl">Let’s talk</p>
-            <p className="mt-3 text-2xl text-white/55 @max-3xl:mt-1.5 @max-3xl:text-sm">Leave your email and a short message.</p>
+            <p className="font-display text-7xl leading-none uppercase @max-3xl:text-4xl">Let’s talk</p>
+            <p className="mt-3 font-serif text-3xl text-cream/60 italic @max-3xl:mt-1.5 @max-3xl:text-lg">Leave your email and a short message.</p>
             <input type="hidden" name="_subject" value="New message from your portfolio" />
-            <label htmlFor="contact-email" className="mt-10 text-xl font-medium text-white/60 @max-3xl:mt-5 @max-3xl:text-sm">
+            <label htmlFor="contact-email" className={`mt-10 ${LABEL} @max-3xl:mt-5`}>
               Email
             </label>
             <input
@@ -115,9 +124,9 @@ function Profile() {
               type="email"
               required
               placeholder="you@example.com"
-              className="mt-3 h-16 rounded-2xl border border-white/12 bg-white/6 px-6 text-2xl outline-none placeholder:text-white/30 focus:border-white/40 @max-3xl:mt-1.5 @max-3xl:h-11 @max-3xl:rounded-xl @max-3xl:px-4 @max-3xl:text-base"
+              className="mt-3 h-16 rounded-lg border border-cream/15 bg-cream/5 px-6 text-2xl outline-none placeholder:text-cream/30 focus:border-signal @max-3xl:mt-1.5 @max-3xl:h-11 @max-3xl:rounded-md @max-3xl:px-4 @max-3xl:text-base"
             />
-            <label htmlFor="contact-message" className="mt-7 text-xl font-medium text-white/60 @max-3xl:mt-3.5 @max-3xl:text-sm">
+            <label htmlFor="contact-message" className={`mt-7 ${LABEL} @max-3xl:mt-3.5`}>
               Message
             </label>
             <textarea
@@ -127,12 +136,12 @@ function Profile() {
               maxLength={500}
               rows={4}
               placeholder="Say hi…"
-              className="mt-3 resize-none rounded-2xl border border-white/12 bg-white/6 px-6 py-5 text-2xl leading-snug outline-none placeholder:text-white/30 focus:border-white/40 @max-3xl:mt-1.5 @max-3xl:rounded-xl @max-3xl:px-4 @max-3xl:py-3 @max-3xl:text-base"
+              className="mt-3 resize-none rounded-lg border border-cream/15 bg-cream/5 px-6 py-5 text-2xl leading-snug outline-none placeholder:text-cream/30 focus:border-signal @max-3xl:mt-1.5 @max-3xl:rounded-md @max-3xl:px-4 @max-3xl:py-3 @max-3xl:text-base"
             />
             <button
               type="submit"
               disabled={status === 'sending'}
-              className="mt-auto h-16 cursor-pointer rounded-full bg-white text-2xl font-semibold text-black transition active:scale-[0.97] disabled:cursor-default disabled:opacity-60 @max-3xl:h-11 @max-3xl:text-base"
+              className={`mt-auto h-16 ${BUTTON} text-2xl disabled:cursor-default disabled:opacity-60 @max-3xl:h-11 @max-3xl:text-sm`}
             >
               {status === 'sending' ? 'Sending…' : 'Send'}
             </button>
@@ -149,10 +158,10 @@ function Profile() {
       <div
         className={`overflow-hidden pl-3 transition-[max-width,opacity,margin] duration-500 ${flipped ? 'ml-0 max-w-0 opacity-0 @max-3xl:hidden' : 'ml-11 max-w-[720px] @max-3xl:mt-7 @max-3xl:ml-0 @max-3xl:pt-3 @max-3xl:pl-0'}`}
       >
-        <p className="relative rounded-[2rem] bg-[#38383c] px-10 py-6 text-6xl font-extrabold tracking-[-0.03em] whitespace-nowrap @max-3xl:rounded-2xl @max-3xl:px-6 @max-3xl:py-3 @max-3xl:text-3xl">
+        <p className="relative rounded-[2rem] bg-cream px-10 py-5 font-serif text-7xl text-ink italic whitespace-nowrap @max-3xl:rounded-2xl @max-3xl:px-6 @max-3xl:py-2.5 @max-3xl:text-4xl">
           <span
             aria-hidden
-            className="absolute top-1/2 -left-3 size-8 -translate-y-1/2 rotate-45 rounded-sm bg-[#38383c] @max-3xl:top-0 @max-3xl:left-1/2 @max-3xl:size-5 @max-3xl:-translate-x-1/2"
+            className="absolute top-1/2 -left-3 size-8 -translate-y-1/2 rotate-45 rounded-sm bg-cream @max-3xl:top-0 @max-3xl:left-1/2 @max-3xl:size-5 @max-3xl:-translate-x-1/2"
           />
           Yup, that’s me!
         </p>
@@ -171,7 +180,7 @@ function WhatIDo() {
       <div
         className={`flex flex-col items-center gap-12 @max-3xl:gap-7 transition-[opacity,visibility] duration-300 ${showApps ? 'invisible opacity-0' : ''}`}
       >
-        <h3 className="text-8xl font-extrabold tracking-[-0.04em] @max-3xl:text-center @max-3xl:text-5xl">This is what I do</h3>
+        <h3 className={`${TITLE} @max-3xl:text-center`}>This is what I do</h3>
         {/* Both labels share one grid cell, so the button keeps its size as
             "Experience" swaps for "Click me" on hover. */}
         <button
@@ -179,7 +188,7 @@ function WhatIDo() {
           aria-expanded={showApps}
           aria-controls="experience-apps"
           onClick={() => setShowApps(true)}
-          className="group grid cursor-pointer rounded-full border-2 border-white/25 bg-white/10 px-14 py-6 text-4xl font-semibold transition hover:bg-white active:scale-[0.97] hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none @max-3xl:px-9 @max-3xl:py-3.5 @max-3xl:text-xl"
+          className={`group grid ${BUTTON} px-14 py-6 text-3xl @max-3xl:px-8 @max-3xl:py-3.5 @max-3xl:text-base`}
         >
           <span className="col-start-1 row-start-1 transition-opacity group-hover:opacity-0 group-focus-visible:opacity-0">
             Experience
@@ -219,7 +228,7 @@ function WhatIDo() {
           <button
             type="button"
             onClick={() => setShowApps(false)}
-            className={`app-pop absolute right-12 bottom-12 flex cursor-pointer items-center gap-4 rounded-full border-2 border-white/25 bg-white/10 px-10 py-5 text-3xl font-semibold transition hover:bg-white active:scale-[0.97] hover:text-black focus-visible:bg-white focus-visible:text-black focus-visible:outline-none @max-3xl:right-4 @max-3xl:bottom-4 @max-3xl:gap-2 @max-3xl:px-5 @max-3xl:py-2.5 @max-3xl:text-base ${opened ? 'invisible' : ''}`}
+            className={`app-pop absolute right-12 bottom-12 flex cursor-pointer items-center gap-4 rounded-lg border border-cream/30 px-10 py-5 font-mono text-2xl tracking-[0.12em] uppercase transition hover:bg-cream hover:text-ink focus-visible:bg-cream focus-visible:text-ink focus-visible:outline-none active:scale-[0.97] @max-3xl:right-4 @max-3xl:bottom-4 @max-3xl:gap-2 @max-3xl:px-5 @max-3xl:py-2.5 @max-3xl:text-sm ${opened ? 'invisible' : ''}`}
             style={{ animationDelay: '180ms' }}
           >
             <svg
@@ -260,30 +269,39 @@ const REP_NATION = {
 
 function RepNation() {
   return (
-    <div className="flex w-[1000px] flex-col items-center text-center @max-3xl:w-full">
-      <p className="text-2xl font-medium tracking-[0.3em] text-white/45 uppercase @max-3xl:text-xs">Founder</p>
-      <h3 className="mt-3 text-8xl font-extrabold tracking-[-0.04em] @max-3xl:mt-2 @max-3xl:text-5xl">Rep Nation</h3>
-      <p className="mt-5 text-4xl leading-snug text-white/70 @max-3xl:mt-3 @max-3xl:text-lg">
+    <div className="flex w-[1040px] flex-col items-center text-center @max-3xl:w-full">
+      <p className={LABEL}>Founder</p>
+      <h3 className={`mt-4 ${TITLE} @max-3xl:mt-2`}>Rep Nation</h3>
+      <p className="mt-4 font-serif text-[2.75rem] leading-tight text-cream/75 @max-3xl:mt-3 @max-3xl:text-xl">
         An iOS app for fitness freaks that brings coaches and their clients together.
       </p>
-      <div className="mt-12 grid w-full grid-cols-2 gap-6 text-left @max-3xl:mt-6 @max-3xl:grid-cols-1 @max-3xl:gap-3">
+      {/* Two ruled columns, like a printed spec sheet. */}
+      <div className="mt-10 grid w-full grid-cols-2 border-y border-cream/15 text-left @max-3xl:mt-6 @max-3xl:grid-cols-1">
         {(['coaches', 'clients'] as const).map((who) => (
-          <div key={who} className="rounded-3xl border border-white/10 bg-white/6 px-9 py-7 @max-3xl:rounded-2xl @max-3xl:px-5 @max-3xl:py-4">
-            <p className="text-xl font-medium tracking-[0.2em] text-white/45 uppercase @max-3xl:text-[11px]">For {who}</p>
-            <ul className="mt-4 flex flex-col gap-3 text-3xl @max-3xl:mt-2 @max-3xl:gap-1 @max-3xl:text-base">
-              {REP_NATION[who].map((item) => (
-                <li key={item} className="flex items-center gap-4 @max-3xl:gap-2.5">
-                  <span aria-hidden className="size-2.5 shrink-0 rounded-full bg-white/50 @max-3xl:size-1.5" />
+          <div
+            key={who}
+            className="px-10 py-7 first:border-r first:border-cream/15 @max-3xl:px-1 @max-3xl:py-4 @max-3xl:first:border-r-0 @max-3xl:first:border-b"
+          >
+            <p className={LABEL}>For {who}</p>
+            <ol className="mt-4 flex flex-col gap-2 font-serif text-[2.1rem] @max-3xl:mt-2 @max-3xl:gap-1 @max-3xl:text-lg">
+              {REP_NATION[who].map((item, i) => (
+                <li key={item} className="flex items-baseline gap-5 @max-3xl:gap-3">
+                  <span aria-hidden className="font-mono text-xl text-signal @max-3xl:text-[11px]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
                   {item}
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
         ))}
       </div>
-      <ul aria-label="Built with" className="mt-10 flex flex-wrap justify-center gap-3 @max-3xl:mt-5 @max-3xl:gap-1.5">
+      <ul
+        aria-label="Built with"
+        className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-xl text-cream/55 @max-3xl:mt-4 @max-3xl:gap-x-2 @max-3xl:text-[11px]"
+      >
         {REP_NATION.stack.map((tool) => (
-          <li key={tool} className="rounded-full border border-white/12 bg-white/6 px-5 py-2 text-xl text-white/80 @max-3xl:px-3 @max-3xl:py-1 @max-3xl:text-xs">
+          <li key={tool} className="after:ml-4 after:text-cream/25 after:content-['/'] last:after:content-none @max-3xl:after:ml-2">
             {tool}
           </li>
         ))}
@@ -295,13 +313,13 @@ function RepNation() {
 function Education() {
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-8xl font-extrabold tracking-[-0.04em] @max-3xl:text-5xl">Education</h3>
-      <div className="mt-14 flex items-center gap-10 rounded-3xl border border-white/10 bg-white/6 py-8 pr-14 pl-8 @max-3xl:mt-8 @max-3xl:flex-col @max-3xl:gap-4 @max-3xl:p-6 @max-3xl:text-center">
+      <h3 className={TITLE}>Education</h3>
+      <div className="mt-14 flex items-center gap-10 border-y border-cream/15 py-8 pr-6 @max-3xl:mt-8 @max-3xl:flex-col @max-3xl:gap-4 @max-3xl:py-6 @max-3xl:pr-0 @max-3xl:text-center">
         <img src={asset('ufv.webp')} alt="UFV logo" className="size-36 shrink-0 rounded-[22%] @max-3xl:size-20" />
         <div>
-          <p className="text-4xl font-bold @max-3xl:text-xl">University of the Fraser Valley</p>
-          <p className="mt-2 text-3xl text-white/75 @max-3xl:mt-1 @max-3xl:text-base">Bachelor’s degree, Computer Information Systems</p>
-          <p className="mt-4 text-2xl tracking-wide text-white/45 @max-3xl:mt-2 @max-3xl:text-sm">Fall 2021 – Winter 2025</p>
+          <p className="font-serif text-5xl @max-3xl:text-2xl">University of the Fraser Valley</p>
+          <p className="mt-2 font-serif text-3xl text-cream/70 italic @max-3xl:mt-1 @max-3xl:text-lg">Bachelor’s degree, Computer Information Systems</p>
+          <p className={`mt-4 ${LABEL} @max-3xl:mt-2`}>Fall 2021 – Winter 2025</p>
         </div>
       </div>
     </div>
@@ -347,22 +365,22 @@ function Resume() {
           alt=""
           className="w-full rounded-xl shadow-[0_30px_70px_rgb(0_0_0/0.6)]"
         />
-        <span className="absolute -right-6 -bottom-6 grid size-20 place-items-center rounded-full bg-white text-black shadow-[0_12px_30px_rgb(0_0_0/0.45)] @max-3xl:-right-4 @max-3xl:-bottom-4 @max-3xl:size-12">
+        <span className="absolute -right-6 -bottom-6 grid size-20 place-items-center rounded-full bg-signal text-ink shadow-[0_12px_30px_rgb(0_0_0/0.45)] @max-3xl:-right-4 @max-3xl:-bottom-4 @max-3xl:size-12">
           <DownloadIcon className="size-9 @max-3xl:size-6" />
         </span>
       </a>
       <div className="text-left @max-3xl:flex @max-3xl:flex-col @max-3xl:items-center @max-3xl:text-center">
-        <h3 className="text-8xl font-extrabold tracking-[-0.04em] @max-3xl:text-5xl">Résumé</h3>
-        <p className="mt-3 text-2xl text-white/50 @max-3xl:mt-2 @max-3xl:text-sm">Ibadatt_Aulakh_Resume.pdf</p>
+        <h3 className={TITLE}>Résumé</h3>
+        <p className="mt-3 font-mono text-xl text-cream/50 @max-3xl:mt-2 @max-3xl:text-[11px]">Ibadatt_Aulakh_Resume.pdf</p>
         <a
           href={RESUME}
           download
-          className="mt-9 inline-flex items-center gap-4 rounded-full bg-white px-10 py-5 text-3xl font-semibold text-black transition hover:opacity-85 active:scale-[0.97] @max-3xl:mt-5 @max-3xl:gap-2.5 @max-3xl:px-6 @max-3xl:py-3 @max-3xl:text-lg"
+          className={`mt-9 inline-flex items-center gap-4 ${BUTTON} px-10 py-5 text-2xl @max-3xl:mt-5 @max-3xl:gap-2.5 @max-3xl:px-6 @max-3xl:py-3 @max-3xl:text-sm`}
         >
           <DownloadIcon className="size-8 @max-3xl:size-5" />
           Download PDF
         </a>
-        <p className="mt-14 text-xl font-medium tracking-[0.2em] text-white/45 uppercase @max-3xl:mt-7 @max-3xl:text-xs">Connect</p>
+        <p className={`mt-14 ${LABEL} @max-3xl:mt-7`}>Connect</p>
         <div className="mt-4 flex gap-5 @max-3xl:mt-3 @max-3xl:gap-3">
           {LINKS.map(({ name, href, logo }) => (
             <a
@@ -371,7 +389,7 @@ function Resume() {
               target="_blank"
               rel="noreferrer"
               aria-label={name}
-              className="grid size-20 place-items-center rounded-full border border-white/12 bg-white/8 transition hover:bg-white hover:text-black active:scale-95 @max-3xl:size-12"
+              className="grid size-20 place-items-center rounded-lg border border-cream/20 transition hover:bg-cream hover:text-ink active:scale-95 @max-3xl:size-12"
             >
               <svg viewBox="0 0 24 24" aria-hidden className="size-9 @max-3xl:size-6" fill="currentColor">
                 <path d={logo} />
@@ -384,28 +402,46 @@ function Resume() {
   )
 }
 
+// Reel-1's shader gradient, in the site's colours and grainy like print.
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+
 function ComingSoon() {
   return (
-    <div className="flex flex-col items-center text-center">
-      <h3 className="shimmer text-8xl font-extrabold tracking-[-0.04em] @max-3xl:text-5xl">Something big</h3>
-      <p className="text-8xl font-extrabold tracking-[-0.04em] text-white/35 @max-3xl:text-4xl">is coming soon.</p>
-      <div aria-hidden className="mt-14 h-2 w-[420px] overflow-hidden rounded-full bg-white/10 @max-3xl:mt-8 @max-3xl:h-1.5 @max-3xl:w-[200px]">
-        <span className="loading-bar block h-full w-1/3 rounded-full bg-white/70" />
+    <>
+      <GrainGradient
+        className="absolute inset-0"
+        colorBack="#0c0b0a"
+        colors={['#ff5b1f', '#7a2408', '#3b2a1f']}
+        shape="corners"
+        softness={0.7}
+        intensity={0.2}
+        noise={0.4}
+        speed={reducedMotion() ? 0 : 0.4}
+      />
+      <div className="relative flex flex-col items-center text-center">
+        <h3 className={TITLE}>Something big</h3>
+        <p className="font-serif text-8xl text-cream/80 italic @max-3xl:text-4xl">is coming soon.</p>
+        <div aria-hidden className="mt-14 h-1.5 w-[420px] overflow-hidden rounded-full bg-cream/15 @max-3xl:mt-8 @max-3xl:h-1 @max-3xl:w-[200px]">
+          <span className="loading-bar block h-full w-1/3 rounded-full bg-cream/80" />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
-/** An app-icon tile for the Dock: a line drawing on a coloured background. */
-function Glyph({ bg, ink = 'white', children }: { bg: string; ink?: string; children: ReactNode }) {
+/**
+ * A Dock icon: a line drawing on a graphite tile, the same for every slide
+ * (like macOS's dark icons), so the Dock reads as one set.
+ */
+function Glyph({ children }: { children: ReactNode }) {
   return (
-    <span className="grid size-full place-items-center" style={{ background: bg }}>
+    <span className="grid size-full place-items-center rounded-[22%] bg-[linear-gradient(#35312c,#191715)] shadow-[inset_0_0_0_1.5px_rgb(239_233_223/0.12)]">
       <svg
         viewBox="0 0 24 24"
-        className="size-[58%]"
+        className="size-[54%]"
         fill="none"
-        stroke={ink}
-        strokeWidth={1.8}
+        stroke="var(--color-cream)"
+        strokeWidth={1.6}
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -415,15 +451,22 @@ function Glyph({ bg, ink = 'white', children }: { bg: string; ink?: string; chil
   )
 }
 
-const photo = (src: string) => <img src={src} alt="" className="size-full object-cover" />
-
 // The laptop display's slides, in order, with their Dock icons.
 export const SLIDES: Slide[] = [
-  { label: 'About me', icon: photo(asset('profile.webp')), content: <Profile /> },
+  {
+    label: 'About me',
+    icon: (
+      <Glyph>
+        <circle cx="12" cy="8.5" r="3.75" />
+        <path d="M4.5 20.5c.9-3.9 3.8-6 7.5-6s6.6 2.1 7.5 6" />
+      </Glyph>
+    ),
+    content: <Profile />,
+  },
   {
     label: 'Experience',
     icon: (
-      <Glyph bg="linear-gradient(#5aa9ff, #1f6fe5)">
+      <Glyph>
         <rect x="3" y="7" width="18" height="13" rx="2.5" />
         <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 12.5h18" />
       </Glyph>
@@ -433,17 +476,26 @@ export const SLIDES: Slide[] = [
   {
     label: 'Rep Nation',
     icon: (
-      <Glyph bg="linear-gradient(#ffa24c, #ff4d5a)">
+      <Glyph>
         <path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" />
       </Glyph>
     ),
     content: <RepNation />,
   },
-  { label: 'Education', icon: photo(asset('ufv.webp')), content: <Education /> },
+  {
+    label: 'Education',
+    icon: (
+      <Glyph>
+        <path d="M2.5 9.5 12 5l9.5 4.5L12 14z" />
+        <path d="M6.5 11.8v4.4c0 1.4 2.5 2.8 5.5 2.8s5.5-1.4 5.5-2.8v-4.4M21.5 9.5v5" />
+      </Glyph>
+    ),
+    content: <Education />,
+  },
   {
     label: 'Résumé',
     icon: (
-      <Glyph bg="linear-gradient(#ffffff, #dcdce0)" ink="#3a3a3c">
+      <Glyph>
         <path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 6 20V4a.5.5 0 0 1 .5-.5z" />
         <path d="M14 3.5V8h4M9 12h6M9 15h6M9 18h3.5" />
       </Glyph>
@@ -453,9 +505,9 @@ export const SLIDES: Slide[] = [
   {
     label: 'Coming soon',
     icon: (
-      <Glyph bg="linear-gradient(#b36bff, #5b5bf6)">
-        <path d="M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1L4 10.5l5.1-1.9z" />
-        <path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
+      // A voice's waveform: what's coming is a voice assistant.
+      <Glyph>
+        <path d="M4 10v4M8 6.5v11M12 3.5v17M16 7.5v9M20 10.5v3" />
       </Glyph>
     ),
     content: <ComingSoon />,

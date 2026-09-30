@@ -160,16 +160,17 @@ function ObjectBright() {
       {/* Scrolls on its own (MacWindow keeps that from scrolling the page);
           keyed so each role opens at its top. */}
       <article key={selected} className="min-w-0 flex-1 overflow-y-auto p-12 @max-3xl:p-5 [scrollbar-color:rgb(255_255_255/0.2)_transparent] [scrollbar-width:thin]">
-        <p className="text-lg font-medium tracking-[0.18em] text-white/45 uppercase @max-3xl:text-[10px]">
+        <p className="font-mono text-base tracking-[0.18em] text-white/45 uppercase @max-3xl:text-[10px]">
           {[role.kind, role.dates].filter(Boolean).join(' · ')}
         </p>
-        <h4 className="mt-2 text-5xl font-extrabold tracking-[-0.03em] @max-3xl:text-2xl">{role.title}</h4>
+        <h4 className="mt-3 font-display text-6xl leading-none uppercase @max-3xl:mt-2 @max-3xl:text-3xl">{role.title}</h4>
 
-        <dl className="mt-8 grid grid-cols-3 gap-4 @max-3xl:mt-4 @max-3xl:gap-2">
+        {/* Figures between hairlines, not in cards. */}
+        <dl className="mt-8 grid grid-cols-3 divide-x divide-white/10 border-y border-white/10 @max-3xl:mt-4">
           {role.stats.map(({ value, label }) => (
-            <div key={label} className="flex flex-col-reverse gap-1 rounded-2xl bg-white/6 px-6 py-5 @max-3xl:rounded-xl @max-3xl:px-2.5 @max-3xl:py-2">
+            <div key={label} className="flex flex-col-reverse gap-1 px-6 py-5 first:pl-0 @max-3xl:px-2.5 @max-3xl:py-2.5 @max-3xl:first:pl-0">
               <dt className="text-lg text-white/55 @max-3xl:text-[10px] @max-3xl:leading-tight">{label}</dt>
-              <dd className="text-4xl font-extrabold tracking-[-0.02em] @max-3xl:text-base">{value}</dd>
+              <dd className="font-display text-5xl uppercase @max-3xl:text-xl">{value}</dd>
             </div>
           ))}
         </dl>
@@ -186,10 +187,10 @@ function ObjectBright() {
           ))}
         </ul>
 
-        <h5 className="mt-12 text-lg font-medium tracking-[0.18em] text-white/45 uppercase @max-3xl:mt-6 @max-3xl:text-[10px]">Stack</h5>
-        <ul className="mt-4 flex flex-wrap gap-3 @max-3xl:mt-2 @max-3xl:gap-1.5">
+        <h5 className="mt-12 font-mono text-base tracking-[0.18em] text-white/45 uppercase @max-3xl:mt-6 @max-3xl:text-[10px]">Stack</h5>
+        <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xl text-white/70 @max-3xl:mt-2 @max-3xl:gap-x-1.5 @max-3xl:text-[11px]">
           {role.stack.map((tool) => (
-            <li key={tool} className="rounded-full border border-white/12 bg-white/6 px-5 py-2 text-xl text-white/80 @max-3xl:px-2.5 @max-3xl:py-1 @max-3xl:text-xs">
+            <li key={tool} className="after:ml-3 after:text-white/25 after:content-['/'] last:after:content-none @max-3xl:after:ml-1.5">
               {tool}
             </li>
           ))}
@@ -204,8 +205,8 @@ function Mercor() {
     <div className="flex gap-10 p-12 @max-3xl:flex-col @max-3xl:gap-4 @max-3xl:p-6">
       <img src={asset('apps/mercor.webp')} alt="" className="size-28 shrink-0 rounded-[22%] @max-3xl:size-16" />
       <div>
-        <p className="text-2xl font-medium tracking-[0.2em] text-white/45 uppercase @max-3xl:text-xs">Mercor</p>
-        <h4 className="mt-2 text-6xl font-extrabold tracking-[-0.03em] @max-3xl:text-3xl">Generalist AI Expert</h4>
+        <p className="font-mono text-xl tracking-[0.2em] text-white/45 uppercase @max-3xl:text-xs">Mercor</p>
+        <h4 className="mt-3 font-display text-7xl leading-none uppercase @max-3xl:mt-2 @max-3xl:text-4xl">Generalist AI Expert</h4>
         <p className="mt-6 text-3xl leading-snug text-white/75 @max-3xl:mt-3 @max-3xl:text-base">
           I worked as a generalist AI expert, reviewing AI models and their accuracy and providing
           detailed feedback.

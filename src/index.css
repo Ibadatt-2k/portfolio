@@ -1,5 +1,15 @@
 @import 'tailwindcss';
 
+/* Warm paper-white on ink, with one loud colour used sparingly. */
+@theme {
+  --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --color-ink: #0c0b0a;
+  --color-cream: #efe9df;
+  --color-signal: #ff5b1f;
+}
+
 /* The page never scrolls: everything is pinned and input drives --p instead. */
 html,
 body,
@@ -9,34 +19,93 @@ body,
   overscroll-behavior: none;
 }
 
+/* The system font is the laptop's own (its Dock, windows and notifications);
+   the page's words use the display, serif and mono faces above. */
 body {
-  background: #000;
+  background: var(--color-ink);
   color: #fff;
-  font-family: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-sans);
   touch-action: pinch-zoom;
 }
 
-/*
- * Each letter reads the stage's --p (0 = scene 1, 1 = scene 2, 2 = scene 3)
- * and its own random travel for flying in (--xi vw, --yi vh, --ri deg) and
- * out (--xo, --yo, --ro), starting once --p passes --in / --out.
- */
+::selection {
+  background: var(--color-signal);
+  color: var(--color-ink);
+}
+
+/* The name and "Portfolio" line across the top, gone before the laptop's lid
+   (which runs almost to the top once zoomed) gets there. */
+.masthead {
+  opacity: clamp(0, (3.2 - var(--p)) / 0.3, 1);
+}
+
+/* A headline's letters, a span each (see Headline). */
 .letter {
-  --dur: 0.3;
-  --ti: clamp(0, (var(--p) - var(--in)) / var(--dur), 1);
-  --to: clamp(0, (var(--p) - var(--out)) / var(--dur), 1);
-  /* Share of the trip still to travel in (ease-out) / already travelled out (ease-in). */
-  --ei: calc((1 - var(--ti)) * (1 - var(--ti)) * (1 - var(--ti)));
-  --eo: calc(var(--to) * var(--to) * var(--to));
   display: inline-block;
-  /* In from below, out upward and off the screen. */
-  transform: translate(
-      calc((var(--xi) * var(--ei) + var(--xo) * var(--eo)) * 1vw),
-      calc((var(--yi) * var(--ei) - var(--yo) * var(--eo)) * 1vh)
-    )
-    rotate(calc((var(--ri) * var(--ei) + var(--ro) * var(--eo)) * 1deg));
-  opacity: calc(1 - var(--ei) - var(--eo));
-  will-change: transform, opacity;
+}
+
+/* The name printed twice, like a two-colour riso poster slightly out of
+   register: an orange pass under the paper-white one. */
+.misprint .letter {
+  text-shadow: 0.04em 0.04em 0 var(--color-signal);
+}
+
+/* "Look inside", either side of the open laptop on wide screens and above and
+   below it on tall ones, never behind it. The laptop is framed to 55% of the
+   width (80% on phones) or 0.8 of the height, whichever's less (see resize()
+   in Laptop.tsx), and drawn open it's about 0.84 as tall as it's wide, its
+   base's front edge (nearer the camera) a little wider. The words take
+   what's left, less the edges and the journey rail; "INSIDE" is 2.32em wide. */
+.backdrop {
+  --laptop-w: min(55vw, 80vh);
+  --gap: calc(var(--laptop-w) * 1.1 + 6vw);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr var(--gap) 1fr;
+  align-items: center;
+  font-size: min((100vw - var(--gap) - 144px) / 2 / 2.4, 18vh);
+}
+
+.backdrop-look {
+  grid-column: 1;
+  justify-self: end;
+}
+
+.backdrop-inside {
+  grid-column: 3;
+  justify-self: start;
+}
+
+@media (width < 48rem) {
+  .backdrop {
+    --laptop-w: min(80vw, 80vh);
+  }
+}
+
+@media (max-aspect-ratio: 5/4) {
+  .backdrop {
+    --gap: calc(var(--laptop-w) * 0.84 + 6vh);
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr var(--gap) 1fr;
+    justify-items: center;
+    /* Clear of the masthead above and the scroll hint below. */
+    font-size: min(26vw, ((100vh - var(--gap)) / 2 - 112px) / 0.86);
+  }
+
+  .backdrop-look {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: center;
+    align-self: end;
+  }
+
+  .backdrop-inside {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: center;
+    align-self: start;
+  }
 }
 
 /* The macOS-style Dock at the foot of the laptop's screen. Icons swell as the
@@ -136,23 +205,7 @@ body {
   transition: opacity 0.3s;
 }
 
-/* Slide 6: a band of light sweeping across the headline, and a loading bar. */
-.shimmer {
-  background: linear-gradient(100deg, #8e8e93 35%, #fff 50%, #8e8e93 65%) 0 0 / 300% 100%;
-  background-clip: text;
-  color: transparent;
-  animation: shimmer 3.2s linear infinite;
-}
-
-@keyframes shimmer {
-  from {
-    background-position: 100% 0;
-  }
-  to {
-    background-position: 0 0;
-  }
-}
-
+/* Slide 6's loading bar. */
 .loading-bar {
   animation: loading 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
@@ -167,12 +220,11 @@ body {
 }
 
 /* No need to keep animating slides that are out of view. */
-[inert] .shimmer,
 [inert] .loading-bar {
   animation-play-state: paused;
 }
 
-/* Headline letters hop as the mouse runs over them. */
+/* Headline letters hop as the mouse runs over them, less than the gap above. */
 @media (hover: hover) {
   .letter {
     pointer-events: auto;
@@ -180,7 +232,7 @@ body {
   }
 
   .letter:hover {
-    translate: 0 -0.14em;
+    translate: 0 -0.06em;
     transition-duration: 0.12s;
   }
 }
@@ -404,6 +456,13 @@ body {
   opacity: max(calc(1 - var(--p) * 8), min(calc((var(--p) - 2.7) * 5), calc((3.3 - var(--p)) * 5)));
 }
 
+/* On tall screens "Look inside" sits where the hint would be and says the same. */
+@media (max-aspect-ratio: 5/4) {
+  .scroll-hint {
+    opacity: calc(1 - var(--p) * 8);
+  }
+}
+
 .scroll-hint-line {
   animation: scroll-hint 1.8s ease-in-out infinite;
 }
@@ -427,13 +486,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .letter {
-    transform: none;
-  }
-
   .scroll-hint-line,
   .app-pop,
-  .shimmer,
   .loading-bar {
     animation: none;
   }
